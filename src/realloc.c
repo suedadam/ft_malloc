@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 18:30:04 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/15 19:49:43 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/15 21:47:03 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ void 	*realloc(void *ptr, size_t size)
 	if (!ptr)
 		return (malloc(size));
 	l_ptr = ptr - sizeof(t_header);
-	printf("%zu < %zu\n", l_ptr->len, size);
 	if (l_ptr->len < size)
 	{
 		if (!l_ptr->large && size < l_ptr->max &&

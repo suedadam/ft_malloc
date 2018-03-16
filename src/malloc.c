@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 14:37:08 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/15 19:44:55 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/16 00:09:17 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ static void	*init_page(size_t pagesize)
 {
 	void	*tmp;
 
+	printf("Allocated new page\n");
 	if ((tmp = mmap(NULL, pagesize, PROT_ALL, FT_MAP_ANON, -1, 0)) == MAP_FAILED)
 		return (NULL);
 #ifdef FT_UNDEFINED
@@ -99,6 +100,12 @@ void		*find_space(void *curr_page, size_t pagesize, size_t req_len)
 	{
 		if (!(l_page->used))
 		{
+			if (l_page->next_page)
+			{
+				curr_page = l_page->next_page;
+				l_page = (t_header *)curr_page;
+				continue ;
+			}
 			l_page->mem_seg = (void *)l_page + sizeof(t_header);
 			l_page->page_start = curr_page;
 			if (!l_page->len)
@@ -154,41 +161,98 @@ void	validate(char **test, int total)
 {
 	for (int i = 0; i < total; ++i)
 	{
-		matches(test[i], i + 'A');
-		printf("%s\n", test[i]);
+		if (test[i])
+		{
+			matches(test[i], i + 'A');
+			// printf("%s\n", test[i]);
+		}
+		else
+		{
+			printf("Randomly free'd? :D\n");
+		}
 	}
 }
 
-int		main(void)
+void 	*thread_func(void *arg)
 {
-	char	*test[26];
-	int i;
+	char	*test[151];
+	int		i;
 
 	i = 0;
-	while (i < 25)
+	while (i < 150)
 	{
 		printf("[%d] ", i);
-		// test = NULL;
 		if (!(test[i] = malloc(sizeof(char) * 101)))
 		{
 			printf("Fail bitch\n");
-			return (-1);
+			exit(-2);
+		}
+		test_copy(test[i], 100, i + 'A');
+		test[i] = realloc(test[i], 200);
+		if (!(rand() % 84))
+		{
+			free(test[i]);
+			test[i] = NULL;
+		}
+		validate(test, i);
+		i++;
+	}
+	i = 149;
+	while (i > 0)
+	{
+		free(test[i]);
+		test[i] = NULL;
+		i--;
+	}
+	return (NULL);
+}
+
+// int		main(void)
+// {
+// 	int i;
+// 	int test;
+// 	pthread_t thread[5];
+
+// 	i = 0;
+// 	srand(time(NULL));
+// 	while (i < 5)
+// 	{
+// 		pthread_create(&(thread[0]), NULL, thread_func, (void *)&test);
+// 		i++;
+// 	}
+// 	pthread_join(thread[0],NULL);
+// 	pthread_join(thread[1],NULL);
+// 	pthread_join(thread[2],NULL);
+// 	pthread_join(thread[3],NULL);
+// 	pthread_join(thread[4],NULL);
+// 	exit(42);
+// }
+int		main(void)
+{
+	char	*test[150];
+	int		i;
+
+	i = 0;
+	while (i < 150)
+	{
+		printf("[%d]\n", i);
+		if (!(test[i] = malloc(sizeof(char) * 101)))
+		{
+			printf("Fail bitch\n");
+			exit(-2);
 		}
 		test_copy(test[i], 100, i + 'A');
 		test[i] = realloc(test[i], 200);
 		validate(test, i);
 		i++;
-		// *test = 40;
-		// free(test);
-		// test = realloc(test, 40);
-		// printf("%p\n", test);
-		// *test = 12;
 	}
-	// free(test);
-	// if (!(test = realloc(test, sizeof(int) * 1024)))
-	// {
-	// 	printf("B)\n");
-	// }
-	// else
-	// 	*test = 14;
+
+	i = 149;
+	while (i > 0)
+	{
+		free(test[i]);
+		test[i] = NULL;
+		i--;
+	}
+	exit(42);
 }

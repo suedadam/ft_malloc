@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 17:26:22 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/15 19:19:55 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/15 23:37:43 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ void	*size_spacer(int page_index, size_t pagesize, size_t size)
 	}
 	mem_seg = find_space(*fetched_seg, pagesize, size);
 	((t_header *)(mem_seg - sizeof(t_header)))->max = ((pagesize / 100) - sizeof(t_header));
-	printf("Max = %llu\n", ((t_header *)(mem_seg - sizeof(t_header)))->max);
 	pthread_mutex_unlock(mutex_lock);
 	return (mem_seg);
 }

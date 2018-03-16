@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 13:33:19 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/15 19:21:01 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/16 00:15:25 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 
 # define TINY 128
 # define LARGE 1024
+# define CLEAN_INTERVAL 2
 # define PAGESIZE(x) ((x + sizeof(t_header)) * 100)
 # define PROT_ALL (PROT_READ | PROT_WRITE | PROT_EXEC)
 # define FT_MAP_ANON (MAP_ANONYMOUS | MAP_PRIVATE)
@@ -56,7 +57,12 @@ void	*find_space(void *curr_page, size_t pagesize, size_t req_len);
 ** http://man7.org/linux/man-pages/man2/mmap.2.html
 */
 
-void			*g_pages[3];
-pthread_mutex_t	g_mutex[3];
+void					*g_pages[3];
+static pthread_mutex_t	g_mutex[3] = {
+	PTHREAD_MUTEX_INITIALIZER,
+	PTHREAD_MUTEX_INITIALIZER,
+	PTHREAD_MUTEX_INITIALIZER
+};
+// pthread_mutex_t	g_mutex[3] = {PTHREAD_MUTEX_INITIALIZER, PTHREAD_MUTEX_INITIALIZER, PTHREAD_MUTEX_INITIALIZER};
 
 #endif

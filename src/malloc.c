@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 14:37:08 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/15 19:42:19 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/15 19:44:55 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,7 @@ void	matches(char *test, char c)
 		if (test[i] != c)
 		{
 			printf("FAILEDDDDD\n");
+			printf("Line = \"%s\"\n", test);
 			exit(1);
 		}
 	}
@@ -174,6 +175,7 @@ int		main(void)
 			return (-1);
 		}
 		test_copy(test[i], 100, i + 'A');
+		test[i] = realloc(test[i], 200);
 		validate(test, i);
 		i++;
 		// *test = 40;

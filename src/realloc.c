@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 18:30:04 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/15 19:33:31 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/15 19:49:43 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,26 +39,28 @@ int		space_avail(t_header *l_ptr, size_t size)
 		avail += post_segs->len;
 		post_segs = ((void *)post_segs) + post_segs->len;
 	}
-	bzero(((void *)l_ptr) + sizeof(t_header) + l_ptr->len, avail);
+	bzero(((void *)l_ptr) + sizeof(t_header) + l_ptr->len, avail - l_ptr->len);
 	return (0);
 }
 
 void 	*realloc(void *ptr, size_t size)
 {
-	t_header *l_ptr;
+	t_header	*l_ptr;
+	void		*copy;
 
 	if (!ptr)
-		return (NULL);
+		return (malloc(size));
 	l_ptr = ptr - sizeof(t_header);
 	printf("%zu < %zu\n", l_ptr->len, size);
 	if (l_ptr->len < size)
 	{
 		if (!l_ptr->large && size < l_ptr->max &&
 			!l_ptr->next_page && !space_avail(l_ptr, size))
-			return (l_ptr);
+			return (ptr);
+		copy = malloc(size);
+		memcpy(copy, ptr, l_ptr->len);
 		free(ptr);
-		printf("got here? %p\n", ptr);
-		return (malloc(size));
+		return (copy);
 	}
 	free(ptr);
 	return (NULL);

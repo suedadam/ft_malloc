@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 18:30:04 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/15 19:27:32 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/15 19:33:31 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int		space_avail(t_header *l_ptr, size_t size)
 	size_t		avail;
 	void		*tmp;
 
-	post_segs = l_ptr + sizeof(t_header) + l_ptr->len;
+	post_segs = ((void *)l_ptr) + sizeof(t_header) + l_ptr->len;
 	avail = l_ptr->len;
 	while (avail < size)
 	{
@@ -39,7 +39,7 @@ int		space_avail(t_header *l_ptr, size_t size)
 		avail += post_segs->len;
 		post_segs = ((void *)post_segs) + post_segs->len;
 	}
-	bzero(post_segs, avail);
+	bzero(((void *)l_ptr) + sizeof(t_header) + l_ptr->len, avail);
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 14:37:08 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/15 19:21:56 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/15 19:42:19 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,33 +129,64 @@ void 		*malloc(size_t size)
 	return (large_alloc(size));
 }
 
+void	test_copy(char *test, int total, char c)
+{
+	for (int i = 0; i < total; ++i)
+	{
+		test[i] = c;
+	}
+}
+
+void	matches(char *test, char c)
+{
+	for (int i = 0; i < 100; ++i)
+	{
+		if (test[i] != c)
+		{
+			printf("FAILEDDDDD\n");
+			exit(1);
+		}
+	}
+}
+
+void	validate(char **test, int total)
+{
+	for (int i = 0; i < total; ++i)
+	{
+		matches(test[i], i + 'A');
+		printf("%s\n", test[i]);
+	}
+}
+
 int		main(void)
 {
-	int	*test;
+	char	*test[26];
 	int i;
 
 	i = 0;
-	// while (i < 30)
-	while (i < 20000)
+	while (i < 25)
 	{
-		printf("[%d] ", i++);
-		test = NULL;
-		if (!(test = malloc(sizeof(int) * 255)))
+		printf("[%d] ", i);
+		// test = NULL;
+		if (!(test[i] = malloc(sizeof(char) * 101)))
 		{
 			printf("Fail bitch\n");
 			return (-1);
 		}
+		test_copy(test[i], 100, i + 'A');
+		validate(test, i);
+		i++;
 		// *test = 40;
-		free(test);
+		// free(test);
 		// test = realloc(test, 40);
-		printf("%p\n", test);
+		// printf("%p\n", test);
 		// *test = 12;
 	}
 	// free(test);
-	if (!(test = realloc(test, sizeof(int) * 1024)))
-	{
-		printf("B)\n");
-	}
-	else
-		*test = 14;
+	// if (!(test = realloc(test, sizeof(int) * 1024)))
+	// {
+	// 	printf("B)\n");
+	// }
+	// else
+	// 	*test = 14;
 }

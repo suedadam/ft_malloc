@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 18:30:04 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/15 19:47:58 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/15 19:49:43 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void 	*realloc(void *ptr, size_t size)
 	{
 		if (!l_ptr->large && size < l_ptr->max &&
 			!l_ptr->next_page && !space_avail(l_ptr, size))
-			return (l_ptr);
+			return (ptr);
 		copy = malloc(size);
 		memcpy(copy, ptr, l_ptr->len);
 		free(ptr);

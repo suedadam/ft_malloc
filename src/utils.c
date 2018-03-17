@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 00:14:58 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 02:01:37 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 14:44:49 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int		next_page(t_header **l_page, void **curr_page, size_t pagesize)
 		return (-1);
 	(*l_page)->next_page = tmp;
 	*curr_page = tmp;
-	(*l_page) = (t_header *)*curr_page;
+	(*l_page) = (t_header *)(*curr_page);
 	return (0);
 }
 
@@ -41,12 +41,30 @@ int		next_page(t_header **l_page, void **curr_page, size_t pagesize)
 int		align_pagesize(size_t x)
 {
 	static int	sys_size = 0;
-	size_t	test;
-	size_t	page;
+	size_t		page;
 
 	if (!sys_size)
 		sys_size = getpagesize();
 	page = PAGESIZE(x);
-	test = page % sys_size;
-	return (page + test);
+	return (page + (page % sys_size));
+}
+
+int		valid_chksum(void *l_ptr)
+{
+	uint8_t		sum;
+	size_t		i;
+	void		*increment;
+	t_header	copy;
+
+	sum = 0;
+	i = 0;
+	ft_memcpy(&copy, l_ptr, sizeof(t_header));
+	copy.chksum = 0;
+	increment = &copy;
+	while (i++ < sizeof(t_header))
+	{
+		sum += *(unsigned char *)increment;
+		increment++;
+	}
+	return (sum == ((t_header *)l_ptr)->chksum);
 }

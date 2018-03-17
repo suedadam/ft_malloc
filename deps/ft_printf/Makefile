@@ -4,30 +4,28 @@
 # SETTINGS                                                                     #
 ################################################################################
 
-ifeq ($(HOSTTYPE),)
-	HOSTTYPE := $(shell uname -m)_$(shell uname -s)
-endif
-
-MALLOC = libft_malloc_${HOSTTYPE}.so
+NAME = libftprintf.a
 CC = gcc
-OBJFLAGS = -g -Wall -Werror -Wextra -c -fPIC
-LIBFLAGS = -g -shared
-LIBFT = deps/ft_printf/libft/libft.a
-LIBPRINTF = deps/ft_printf/libftprintf.a
-SOURCE_DIR = src
-MALLOC_SRC = \
-	free \
-	malloc \
-	page_size \
-	realloc \
+CFLAGS = -Wall -Werror -Wextra
+LIBFT = libft/libft.a
+PRINTF_SRC = \
+	ft_printf \
+	integer \
+	length \
+	num_fetch \
+	parse \
+	special \
+	strings \
+	tools \
 	utils \
-	show_alloc \
-	alloc_large \
-	large_free
+	buffer \
+	flags \
+	special \
+	wide \
+	format
 
-MALLOC_OBJ = $(patsubst %, obj/%.o, $(MALLOC_SRC))
-INC = -I deps/ft_printf
-MALLOC_INC = -I includes
+PRINTF_OBJ = $(patsubst %, obj/%.o, $(PRINTF_SRC))
+INC = -I libft -I .
 
 ################################################################################
 # COLORS                                                                       #
@@ -43,34 +41,30 @@ BLUE = \033[1;36m
 # RULES                                                                        #
 ################################################################################
 
-all: $(MALLOC)
+all: $(NAME)
 
-$(MALLOC): $(LIBPRINTF) $(MALLOC_OBJ)
+$(NAME): $(LIBFT) $(PRINTF_OBJ)
 	@printf "$(YELLOW)%-50s$(NC)" "Building $@... "
-	@$(CC) $(LIBFLAGS) $(LIBPRINTF) $(LIBFT) $(MALLOC_OBJ) -o $@
-	@rm -f libft_malloc.so
-	@ln -s $@ libft_malloc.so
+	@ar rcs $(NAME) $(PRINTF_OBJ)
 	@echo "$(GREEN)DONE$(NC)"
 
-obj/%.o: $(SOURCE_DIR)/%.c
+obj/%.o: %.c
 	@mkdir -p $(dir $@)
 	@echo " > Compiling $<..."
-	@$(CC) $(OBJFLAGS) $(INC) $(MALLOC_INC) -c $< -o $@
+	@$(CC) $(OBJFLAGS) $(INC) -c $< -o $@
 
-$(LIBPRINTF):
-	@echo "Attempting"
+$(LIBFT):
 	@printf "$(YELLOW)%-50s$(NC)" "Building $@... "
-	@make -C deps/ft_printf
+	@make -C libft
 
 clean:
 	@rm -rf obj
-	@make -C deps/ft_printf clean
+	@make -C libft clean
 	@echo "$(RED)Object files removed$(NC)"
 
 fclean: clean
-	@make -C deps/ft_printf fclean
-	@rm -f $(MALLOC)
-	@rm -f libft_malloc.so
-	@echo "$(BLUE) $(MALLOC) removed$(NC)"
+	@make -C libft fclean
+	@rm -f $(NAME)
+	@echo "$(BLUE) $(NAME) removed$(NC)"
 
 re: fclean all

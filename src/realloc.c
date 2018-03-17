@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/03/15 18:30:04 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 00:32:19 by asyed            ###   ########.fr       */
+/*   Created: 2018/03/17 15:42:46 by asyed             #+#    #+#             */
+/*   Updated: 2018/03/17 15:43:11 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int		space_avail(t_header *l_ptr, size_t size)
 		avail += post_segs->len;
 		post_segs = ((void *)post_segs) + post_segs->len;
 	}
-	bzero(((void *)l_ptr) + sizeof(t_header) + l_ptr->len, avail - l_ptr->len);
+	ft_bzero(((void *)l_ptr) + sizeof(t_header) + l_ptr->len, avail - l_ptr->len);
 	l_ptr->len = avail;
 	return (0);
 }
@@ -50,17 +50,20 @@ void	*realloc(void *ptr, size_t size)
 	void		*copy;
 	size_t		max;
 
-	if (!ptr)
+	if (!ptr || !valid_chksum(ptr - sizeof(t_header)))
 		return (malloc(size));
 	l_ptr = ptr - sizeof(t_header);
 	max = get_memseg_size(l_ptr->index);
 	if (l_ptr->len < size)
 	{
-		if (l_ptr->index != LARGE_IND && size < max &&
+		if (l_ptr->index != LARGE_IND && size <= max &&
 			!l_ptr->next_page && !space_avail(l_ptr, size))
+		{
+			l_ptr->chksum = chksum(l_ptr);
 			return (ptr);
+		}
 		copy = malloc(size);
-		memcpy(copy, ptr, l_ptr->len);
+		ft_memcpy(copy, ptr, l_ptr->len);
 		free(ptr);
 		return (copy);
 	}

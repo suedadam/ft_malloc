@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_malloc.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 13:33:19 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 00:25:46 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 02:05:46 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,16 @@
 # include <sys/mman.h>
 # include <pthread.h>
 # include <string.h>
+# include <unistd.h>
 
 # define TINY_IND 0
 # define SMALL_IND 1
 # define LARGE_IND 2
 # define CLEAN_INTERVAL 1
+# define MAX_PER_PAGE 300
 # define TINY 128
-# define LARGE 1024
-# define PAGESIZE(x) ((x + sizeof(t_header)) * 100)
+# define LARGE 2048
+# define PAGESIZE(x) ((x + sizeof(t_header)) * MAX_PER_PAGE)
 # define PROT_ALL (PROT_READ | PROT_WRITE | PROT_EXEC)
 # define FT_MAP_ANON (MAP_ANONYMOUS | MAP_PRIVATE)
 
@@ -47,6 +49,7 @@ void			*find_space(void *curr_page, size_t pagesize, size_t req_len);
 int				get_memseg_size(uint8_t index);
 void			*init_page(size_t pagesize);
 int				next_page(t_header **l_page, void **curr_page, size_t pagesize);
+int				align_pagesize(size_t x);
 
 extern void				*g_pages[3];
 extern pthread_mutex_t	g_mutex[3];

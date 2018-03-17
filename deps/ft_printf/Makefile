@@ -35,6 +35,7 @@ NC = \033[0m
 GREEN = \033[1;32m
 RED = \033[1;31m
 YELLOW = \033[1;33m
+BLUE = \033[1;36m
 
 ################################################################################
 # RULES                                                                        #
@@ -64,6 +65,6 @@ clean:
 fclean: clean
 	@make -C libft fclean
 	@rm -f $(NAME)
-	@echo "$(NAME) removed$(NC)"
+	@echo "$(BLUE) $(NAME) removed$(NC)"
 
 re: fclean all

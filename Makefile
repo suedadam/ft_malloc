@@ -37,6 +37,7 @@ NC = \033[0m
 GREEN = \033[1;32m
 RED = \033[1;31m
 YELLOW = \033[1;33m
+BLUE = \033[1;36m
 
 ################################################################################
 # RULES                                                                        #
@@ -70,6 +71,6 @@ fclean: clean
 	@make -C deps/ft_printf fclean
 	@rm -f $(MALLOC)
 	@rm -f libft_malloc.so
-	@echo "$(MALLOC) removed$(NC)"
+	@echo "$(BLUE) $(MALLOC) removed$(NC)"
 
 re: fclean all

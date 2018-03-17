@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 17:26:22 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 14:47:09 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 15:44:52 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,18 +48,6 @@ void	*size_spacer(int page_index, size_t pagesize, size_t size)
 				chksum(mem_seg - sizeof(t_header));
 	pthread_mutex_unlock(mutex_lock);
 	return (mem_seg);
-}
-
-void	*large_alloc(size_t size)
-{
-	void	*tmp;
-
-	if ((tmp = mmap(NULL, size +
-			sizeof(t_header), PROT_ALL, FT_MAP_ANON, -1, 0)) == MAP_FAILED)
-		return (NULL);
-	((t_header *)tmp)->index = LARGE_IND;
-	((t_header *)tmp)->used = 1;
-	return ((void *)tmp + sizeof(t_header));
 }
 
 int		get_memseg_size(uint8_t index)

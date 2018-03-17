@@ -1,18 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_bzero.c                                         :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/09/18 12:24:47 by asyed             #+#    #+#             */
-/*   Updated: 2017/09/23 00:02:04 by asyed            ###   ########.fr       */
+/*   Created: 2017/09/22 00:08:55 by asyed             #+#    #+#             */
+/*   Updated: 2017/11/07 04:35:17 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+#include <unistd.h>
 
-void	ft_bzero(void *s, size_t n)
+void	ft_uputnbr_fd(__uint64_t n, int fd)
 {
-	ft_memset(s, 0, n);
+	if (n >= 10)
+	{
+		ft_putnbr_fd(n / 10, fd);
+		ft_putchar_fd(n % 10 + '0', fd);
+	}
+	if (n < 10)
+		ft_putchar_fd(n % 10 + '0', fd);
 }

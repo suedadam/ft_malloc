@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 12:35:41 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 14:40:53 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 15:08:39 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void		print_pagesegs(int page_index, size_t *total)
 	{
 		if (l_page->used)
 		{
-			printf("%p - %p : %zu bytes\n", (void *)l_page +
+			ft_printf("%p - %p : %zu bytes\n", (void *)l_page +
 				sizeof(t_header), (void *)l_page +
 				sizeof(t_header) + l_page->len, l_page->len);
 			*total += l_page->len;
@@ -50,7 +50,7 @@ static void	print_large(size_t *total)
 	while (curr_page)
 	{
 		l_page = (t_header *)curr_page;
-		printf("%p - %p : %zu bytes\n", (void *)l_page +
+		ft_printf("%p - %p : %zu bytes\n", (void *)l_page +
 			sizeof(t_header), (void *)l_page + sizeof(t_header) +
 				l_page->len, l_page->len);
 		*total += l_page->len;
@@ -63,11 +63,11 @@ void		print_pageheader(int page_index, size_t *total)
 	if (page_index > LARGE_IND)
 		return ;
 	if (page_index == TINY_IND)
-		printf("TINY :\n");
+		ft_printf("TINY :\n");
 	else if (page_index == SMALL_IND)
-		printf("SMALL :\n");
+		ft_printf("SMALL :\n");
 	else if (page_index == LARGE_IND)
-		printf("LARGE:\n");
+		ft_printf("LARGE:\n");
 	pthread_mutex_lock(&(g_mutex[page_index]));
 	if (page_index == LARGE_IND)
 		print_large(total);
@@ -82,5 +82,5 @@ void		show_alloc_mem(void)
 
 	total = 0;
 	print_pageheader(0, &total);
-	printf("Total : %zu bytes\n", total);
+	ft_printf("Total : %zu bytes\n", total);
 }

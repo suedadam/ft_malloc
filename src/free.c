@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 17:55:09 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 14:35:16 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 14:47:27 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void	free(void *ptr)
 		return ;
 	pthread_mutex_lock(&(g_mutex[l_ptr->index]));
 	l_ptr->used = 0;
-	bzero(ptr, l_ptr->len);
+	ft_bzero(ptr, l_ptr->len);
 	pthread_mutex_unlock(&(g_mutex[l_ptr->index]));
 	if (clean_up++ == CLEAN_INTERVAL)
 		cleaning_lady(&clean_up, 0);

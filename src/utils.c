@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 00:14:58 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 14:12:45 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 14:44:49 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int		valid_chksum(void *l_ptr)
 
 	sum = 0;
 	i = 0;
-	memcpy(&copy, l_ptr, sizeof(t_header));
+	ft_memcpy(&copy, l_ptr, sizeof(t_header));
 	copy.chksum = 0;
 	increment = &copy;
 	while (i++ < sizeof(t_header))

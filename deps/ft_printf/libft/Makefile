@@ -63,9 +63,9 @@ LIBFT_SRC = ./ft_strrchr.c \
 ./ft_lstdel.c \
 ./ft_strchr.c \
 ./ft_realloc.c \
-./ft_strccmp.c \
-./get_next_line.c \
-./ft_realloc_safe.c \
+./ft_uputnbr.c \
+./ft_uputnbr_fd.c \
+./ft_wcslen.c \
 
 LIBFT_OBJ = $(subst .c,.o, $(LIBFT_SRC))
 

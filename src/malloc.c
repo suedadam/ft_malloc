@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   malloc.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 14:37:08 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 05:13:15 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 14:38:20 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,11 @@ static int	infinite_block(void **curr_page, t_header **l_page,
 		(*l_page)->used = 1;
 		(*l_page)->len = req_len;
 		void_page = *l_page;
-		if (void_page + req_len + sizeof(t_header) <= (*curr_page + pagesize))
+		if ((void_page + (*l_page)->len + sizeof(t_header))
+			<= (*curr_page + pagesize - sizeof(t_header)))
 		{
-			((t_header *)(((void *)(*l_page)) + (*l_page)->len))->next_page =
-						(*l_page)->next_page;
+			((t_header *)(void_page + sizeof(t_header) +
+				(*l_page)->len))->next_page = (*l_page)->next_page;
 			(*l_page)->next_page = NULL;
 		}
 		return (0);
@@ -119,5 +120,6 @@ void		*malloc(size_t size)
 		return (size_spacer(TINY_IND, align_pagesize(TINY), size));
 	if (size > TINY && size < LARGE)
 		return (size_spacer(SMALL_IND, align_pagesize(LARGE), size));
-	return (size_spacer(LARGE_IND, align_pagesize(size + sizeof(t_header)), size));
+	return (alloc_large(LARGE_IND,
+			align_pagesize(size + sizeof(t_header)), size));
 }

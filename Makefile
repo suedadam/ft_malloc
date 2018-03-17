@@ -19,7 +19,9 @@ MALLOC_SRC = \
 	malloc \
 	page_size \
 	realloc \
-	utils
+	utils \
+	show_alloc \
+	alloc_large
 
 MALLOC_OBJ = $(patsubst %, obj/%.o, $(MALLOC_SRC))
 INC = -I libft

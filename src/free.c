@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 17:55:09 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 05:33:45 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 14:35:16 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,16 @@ void	flip_page(t_header **l_page, void **curr_page, size_t pagesize)
 	}
 }
 
-void	tear_page(t_header **l_page, void **curr_page, size_t pagesize, int page_index)
+void	tear_page(t_header **l_page, void **curr_page,
+				size_t pagesize, int page_index)
 {
 	void	*tmp;
 
 	tmp = *curr_page;
 	flip_page(l_page, curr_page, pagesize);
 	if (page_index == LARGE_IND)
-		munmap(tmp, align_pagesize(((t_header *)(*l_page))->len + sizeof(t_header)));
+		munmap(tmp,
+			align_pagesize(((t_header *)(*l_page))->len + sizeof(t_header)));
 	else
 		munmap(tmp, pagesize);
 }
@@ -68,13 +70,18 @@ void	look_through(void **head_page, size_t pagesize, int page_index)
 
 void	cleaning_lady(int *clean_up, int page_index)
 {
-	if (page_index < LARGE_IND)
+	if (page_index <= LARGE_IND)
 	{
-		pthread_mutex_lock(&(g_mutex[page_index]));
-		look_through(&(g_pages[page_index]),
+		if (page_index == LARGE_IND)
+			cleanup_tty();
+		else
+		{
+			pthread_mutex_lock(&(g_mutex[page_index]));
+			look_through(&(g_pages[page_index]),
 					align_pagesize(get_memseg_size(page_index)), page_index);
-		pthread_mutex_unlock(&(g_mutex[page_index]));
-		cleaning_lady(clean_up, page_index + 1);		
+			pthread_mutex_unlock(&(g_mutex[page_index]));
+			cleaning_lady(clean_up, page_index + 1);
+		}
 	}
 	else
 		*clean_up = 0;

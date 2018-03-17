@@ -1,32 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   liladam.c                                          :+:      :+:    :+:   */
+/*   test6.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/03/17 02:37:43 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 14:11:52 by asyed            ###   ########.fr       */
+/*   Created: 2018/03/17 12:57:23 by asyed             #+#    #+#             */
+/*   Updated: 2018/03/17 13:56:34 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
-#include <stdio.h>
-#include "ft_malloc.h"
 
 int	main(void)
 {
-	int		i;
-	char	*addr;
-
-	i = 0;
-	// while (i < 1024)
-	// {
-		printf("[%d]\n", i);
-		addr = malloc(350404);
-		free(addr);
-		show_alloc_mem();
-		i++;
-	// }
+	malloc(1024);
+	malloc(1024 * 32);
+	malloc(1024 * 1024);
+	malloc(1024 * 1024 * 16);
+	malloc(1024 * 1024 * 128);
+	show_alloc_mem();
 	return (0);
 }

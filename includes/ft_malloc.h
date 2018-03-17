@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 13:33:19 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 02:05:46 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 03:47:34 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,20 @@
 # define PROT_ALL (PROT_READ | PROT_WRITE | PROT_EXEC)
 # define FT_MAP_ANON (MAP_ANONYMOUS | MAP_PRIVATE)
 
+#ifndef _DYLD_INTERPOSING_H_
+#define _DYLD_INTERPOSING_H_
+
+#define DYLD_INTERPOSE(_replacement,_replacee) \
+   __attribute__((used)) static struct{ const void* replacement; const void* replacee; } _interpose_##_replacee \
+            __attribute__ ((section ("__DATA,__interpose"))) = { (const void*)(unsigned long)&_replacement, (const void*)(unsigned long)&_replacee };
+#endif
+
 typedef struct __attribute__((packed))	s_header
 {
 	size_t		len;
 	uint8_t		used:1;
 	uint8_t		index:2;
+	uint8_t		chksum;
 	void		*page_start;
 	void		*next_page;
 }				t_header;
@@ -50,6 +59,8 @@ int				get_memseg_size(uint8_t index);
 void			*init_page(size_t pagesize);
 int				next_page(t_header **l_page, void **curr_page, size_t pagesize);
 int				align_pagesize(size_t x);
+int				valid_chksum(void *l_ptr);
+uint8_t			chksum(void *mem);
 
 extern void				*g_pages[3];
 extern pthread_mutex_t	g_mutex[3];

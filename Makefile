@@ -4,10 +4,14 @@
 # SETTINGS                                                                     #
 ################################################################################
 
+ifeq ($(HOSTTYPE),)
+	HOSTTYPE := $(shell uname -m)_$(shell uname -s)
+endif
+
 MALLOC = libft_malloc_${HOSTTYPE}.so
 CC = gcc
-OBJFLAGS = -Wall -Werror -Wextra -c -fPIC
-LIBFLAGS = -shared
+OBJFLAGS = -g -Wall -Werror -Wextra -c -fPIC
+LIBFLAGS = -g -shared
 LIBFT = libft/libft.a
 SOURCE_DIR = src
 MALLOC_SRC = \
@@ -39,6 +43,7 @@ all: $(MALLOC)
 $(MALLOC): $(LIBFT) $(MALLOC_OBJ)
 	@printf "$(YELLOW)%-50s$(NC)" "Building $@... "
 	@$(CC) $(LIBFLAGS) $(MALLOC_OBJ) -o $@
+	@rm -f libft_malloc.so
 	@ln -s $@ libft_malloc.so
 	@echo "$(GREEN)DONE$(NC)"
 

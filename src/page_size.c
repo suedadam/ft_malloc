@@ -3,14 +3,30 @@
 /*                                                        :::      ::::::::   */
 /*   page_size.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 17:26:22 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 00:31:34 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 03:37:02 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_malloc.h"
+
+uint8_t	chksum(void *mem)
+{
+	uint8_t		sum;
+	size_t		i;
+
+	sum = 0;
+	i = 0;
+	((t_header *)mem)->chksum = 0;
+	while (i++ < sizeof(t_header))
+	{
+		sum += *(unsigned char *)mem;
+		mem++;
+	}
+	return (sum);
+}
 
 void	*size_spacer(int page_index, size_t pagesize, size_t size)
 {
@@ -18,6 +34,7 @@ void	*size_spacer(int page_index, size_t pagesize, size_t size)
 	pthread_mutex_t	*mutex_lock;
 	void			*mem_seg;
 
+	// printf("what the fuck\n");
 	fetched_seg = &(g_pages[page_index]);
 	mutex_lock = &(g_mutex[page_index]);
 	pthread_mutex_lock(mutex_lock);
@@ -28,6 +45,7 @@ void	*size_spacer(int page_index, size_t pagesize, size_t size)
 	}
 	mem_seg = find_space(*fetched_seg, pagesize, size);
 	((t_header *)(mem_seg - sizeof(t_header)))->index = page_index;
+	((t_header *)(mem_seg - sizeof(t_header)))->chksum = chksum(mem_seg - sizeof(t_header));
 	pthread_mutex_unlock(mutex_lock);
 	return (mem_seg);
 }

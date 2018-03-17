@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 14:37:08 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 02:00:43 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 03:34:27 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,14 +115,12 @@ void		*find_space(void *curr_page, size_t pagesize, size_t req_len)
 
 void		*malloc(size_t size)
 {
+	printf("Using Adam's cool Malloc\n");
 	if (size == 0)
 		size = 1;
 	if (size <= TINY)
 		return (size_spacer(TINY_IND, align_pagesize(TINY), size));
-		// return (size_spacer(TINY_IND, PAGESIZE(TINY), size));
 	if (size > TINY && size < LARGE)
 		return (size_spacer(SMALL_IND, align_pagesize(LARGE), size));
-		// return (size_spacer(SMALL_IND, PAGESIZE(LARGE), size));
 	return (size_spacer(LARGE_IND, align_pagesize(size + sizeof(t_header)), size));
-	// return (size_spacer(LARGE_IND, size + sizeof(t_header), size));
 }

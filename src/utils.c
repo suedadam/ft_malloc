@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 00:14:58 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 02:01:37 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 03:42:58 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,4 +49,24 @@ int		align_pagesize(size_t x)
 	page = PAGESIZE(x);
 	test = page % sys_size;
 	return (page + test);
+}
+
+int		valid_chksum(void *l_ptr)
+{
+	uint8_t		sum;
+	size_t		i;
+	void		*increment;
+	t_header	copy;
+
+	sum = 0;
+	i = 0;
+	memcpy(&copy, l_ptr, sizeof(t_header));
+	copy.chksum = 0;
+	increment = &copy;
+	while (i++ < sizeof(t_header))
+	{
+		sum += *(unsigned char *)increment;
+		increment++;
+	}
+	return (sum == ((t_header *)l_ptr)->chksum);
 }

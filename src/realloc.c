@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 18:30:04 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 14:46:58 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 15:35:26 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void	*realloc(void *ptr, size_t size)
 	max = get_memseg_size(l_ptr->index);
 	if (l_ptr->len < size)
 	{
-		if (l_ptr->index != LARGE_IND && size < max &&
+		if (l_ptr->index != LARGE_IND && size <= max &&
 			!l_ptr->next_page && !space_avail(l_ptr, size))
 		{
 			l_ptr->chksum = chksum(l_ptr);

@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 13:33:19 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 14:51:29 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 15:23:08 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <pthread.h>
 # include <string.h>
 # include <unistd.h>
-# include "libft.h"
+# include "libft/libft.h"
 # include "ft_printf.h"
 
 # define TINY_IND 0

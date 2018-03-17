@@ -1,23 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memset.c                                        :+:      :+:    :+:   */
+/*   special.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/09/18 12:20:10 by asyed             #+#    #+#             */
-/*   Updated: 2017/09/23 00:09:06 by asyed            ###   ########.fr       */
+/*   Created: 2017/11/27 15:32:23 by asyed             #+#    #+#             */
+/*   Updated: 2017/11/27 15:38:36 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "ft_printf.h"
 
-void	*ft_memset(void *ptr, int val, size_t num)
+int	special(t_options *info)
 {
-	char	*d;
-
-	d = (char *)ptr;
-	while (num--)
-		*(d++) = val;
-	return (ptr);
+	info->min_width = 1;
+	return (1);
 }

@@ -1,34 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_realloc_safe.c                                  :+:      :+:    :+:   */
+/*   buffer.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/10/19 12:16:25 by asyed             #+#    #+#             */
-/*   Updated: 2018/02/01 21:51:02 by asyed            ###   ########.fr       */
+/*   Created: 2017/11/14 00:43:34 by asyed             #+#    #+#             */
+/*   Updated: 2017/11/27 15:30:40 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include <stdlib.h>
+#include "ft_printf.h"
 
-void	*ft_realloc_safe(void *src, size_t old_size, size_t new_size)
+void	print_buffer(char *str, t_options *info)
 {
-	void	*new;
+	int	length;
 
-	if (!src)
-		return (ft_memalloc(new_size));
-	if (!new_size)
-	{
-		free(src);
-		return (NULL);
-	}
-	new = (void *)ft_memalloc(new_size);
-	if (!new)
-		return (NULL);
-	new = ft_memcpy(new, src, old_size);
-	ft_bzero(new + old_size, new_size - old_size);
-	free(src);
-	return (new);
+	length = ft_strlen(str);
+	info->written += length;
+	ft_putstr(str);
+	ft_bzero(str, length * sizeof(char));
+}
+
+void	addchar(char *str, char c)
+{
+	while (*str)
+		str++;
+	*str = c;
 }

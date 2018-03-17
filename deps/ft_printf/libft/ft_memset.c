@@ -1,21 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putstr_fd.c                                     :+:      :+:    :+:   */
+/*   ft_memset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/09/22 00:05:42 by asyed             #+#    #+#             */
-/*   Updated: 2017/09/23 00:45:54 by asyed            ###   ########.fr       */
+/*   Created: 2017/09/18 12:20:10 by asyed             #+#    #+#             */
+/*   Updated: 2017/11/15 13:31:21 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include <unistd.h>
 
-void	ft_putstr_fd(char const *s, int fd)
+void	*ft_memset(void *ptr, int val, size_t num)
 {
-	if (s)
-		while (*s)
-			write(fd, s++, 1);
+	char	*d;
+	size_t	i;
+
+	d = (char *)ptr;
+	i = 0;
+	while (i < num)
+	{
+		*(d++) = val;
+		i++;
+	}
+	return (ptr);
 }

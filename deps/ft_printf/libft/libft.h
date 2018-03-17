@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/18 11:27:49 by asyed             #+#    #+#             */
-/*   Updated: 2018/02/02 16:16:35 by asyed            ###   ########.fr       */
+/*   Updated: 2017/11/20 09:56:37 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,8 @@
 # define LIBFT_H
 # include <string.h>
 # include <unistd.h>
+# include <wchar.h>
 # define TRIMSPACE(c) (c == ' ' || c == '\n' || c == '\t')
-# define FDS 3000
-# define BUFF_SIZE 10
-# define SCHAR sizeof(char)
 
 typedef struct	s_list
 {
@@ -51,19 +49,20 @@ void			*ft_memcpy(void *dest, const void *src, size_t n);
 void			ft_memdel(void **ap);
 void			*ft_memmove(void *dest, const void *src, size_t n);
 void			*ft_memset(void *ptr, int val, size_t num);
-int				ft_putchar(int c);
+void			ft_putchar(char c);
 void			ft_putchar_fd(char c, int fd);
 void			ft_putendl(char const *s);
 void			ft_putendl_fd(char const *s, int fd);
-void			ft_putnbr(int n);
-void			ft_putnbr_fd(int n, int fd);
+void			ft_putnbr(__int64_t n);
+void			ft_putnbr_fd(__int64_t n, int fd);
+void			ft_uputnbr(__uint64_t n);
+void			ft_uputnbr_fd(__uint64_t n, int fd);
 void			ft_putstr(char const *s);
 void			ft_putstr_fd(char const *s, int fd);
 char			*ft_strcat(char *dest, const char *src);
 char			*ft_strchr(const char *s, int c);
 void			ft_strclr(char *s);
 int				ft_strcmp(const char *s1, const char *s2);
-int				ft_strccmp(const char *s1, const char *s2, char c);
 char			*ft_strcpy(char *dest, const char *src);
 void			ft_strdel(char **ap);
 char			*ft_strdup(const char *s);
@@ -89,8 +88,6 @@ char			*ft_strtrim(char const *s);
 int				ft_tolower(int c);
 int				ft_toupper(int c);
 void			*ft_realloc(void *src, size_t new_size);
-void			*ft_realloc_safe(void *src, size_t old_size, size_t new_size);
-int				get_next_line(const int fd, char **line);
+size_t			ft_wcslen(const wchar_t *s);
 
 #endif
-

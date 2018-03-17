@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 18:30:04 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/16 21:17:53 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 00:32:19 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,11 @@ int		space_avail(t_header *l_ptr, size_t size)
 	return (0);
 }
 
-void 	*realloc(void *ptr, size_t size)
+void	*realloc(void *ptr, size_t size)
 {
 	t_header	*l_ptr;
 	void		*copy;
-	int			max;
+	size_t		max;
 
 	if (!ptr)
 		return (malloc(size));

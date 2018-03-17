@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 18:30:04 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/16 14:40:59 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/16 21:17:53 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,13 @@ int		space_avail(t_header *l_ptr, size_t size)
 {
 	t_header	*post_segs;
 	size_t		avail;
-	void		*tmp;
 
 	post_segs = ((void *)l_ptr) + sizeof(t_header) + l_ptr->len;
 	avail = l_ptr->len;
 	while (avail < size)
 	{
 		if (post_segs->used)
-			return (-1);
+			return (1);
 		if (!post_segs->len &&
 			!post_segs->next_page)
 		{
@@ -35,7 +34,7 @@ int		space_avail(t_header *l_ptr, size_t size)
 			if (avail + post_segs->len >= size)
 				l_ptr->next_page = post_segs->next_page;
 			else
-				return (-1);
+				return (1);
 		}
 		avail += post_segs->len;
 		post_segs = ((void *)post_segs) + post_segs->len;
@@ -65,7 +64,7 @@ void 	*realloc(void *ptr, size_t size)
 		free(ptr);
 		return (copy);
 	}
-	else if (size < l_ptr->len && size > 0)
+	else if (size <= l_ptr->len && size > 0)
 		return (ptr);
 	free(ptr);
 	return (NULL);

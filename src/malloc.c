@@ -6,11 +6,18 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 14:37:08 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/16 17:29:08 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/16 21:18:10 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_malloc.h"
+
+void			*g_pages[3] = {NULL, NULL, NULL};
+pthread_mutex_t	g_mutex[3] = {
+	PTHREAD_MUTEX_INITIALIZER,
+	PTHREAD_MUTEX_INITIALIZER,
+	PTHREAD_MUTEX_INITIALIZER
+};
 
 void	*init_page(size_t pagesize)
 {
@@ -44,96 +51,104 @@ static int	next_page(t_header **l_page, void **curr_page, size_t pagesize)
 
 static int	finite_block(void **curr_page, t_header **l_page, size_t req_len, size_t pagesize)
 {
-	void	*tmp;
-
+	//Fits
 	if ((*l_page)->len >= req_len)
 	{
 		(*l_page)->used = 1;
 		return (req_len);
 	}
-	else if ((void *)(*l_page + (*l_page)->len) < (*curr_page + pagesize))
+	else if ((*l_page)->next_page)
 	{
-		*l_page = (void *)*l_page + (*l_page)->len + sizeof(t_header);
-		return (0);
+		*curr_page = (*l_page)->next_page;
+		*l_page = (t_header *)(*curr_page);
 	}
+	else if ((((void *)(*l_page)) + (*l_page)->len) < (*curr_page + pagesize))
+		*l_page = ((void *)(*l_page)) + (*l_page)->len;
 	else
 	{
-		if (next_page(l_page, curr_page, pagesize))
-			return (0);
-		return (req_len);
+		printf("Finite block!!!!\n");
+		next_page(l_page, curr_page, pagesize);
 	}
+	return (0);
 }
 
 static int	infinite_block(void **curr_page, t_header **l_page, size_t req_len, size_t pagesize)
 {
 	void	*void_page;
 
-	void_page = (*l_page)->mem_seg;
-	if ((void_page + req_len) < (*curr_page + pagesize))
+	void_page = ((void *)(*l_page)) + sizeof(t_header);
+	if ((void_page + req_len) <= (*curr_page + pagesize))
 	{
 		(*l_page)->used = 1;
 		(*l_page)->len = req_len;
 		void_page = *l_page;
-		((t_header *)(void_page + (*l_page)->len))->next_page = (*l_page)->next_page;
-		(*l_page)->next_page = NULL;
+		if (void_page + req_len + sizeof(t_header) <= (*curr_page + pagesize))
+		{
+			((t_header *)(((void *)(*l_page)) + (*l_page)->len))->next_page = (*l_page)->next_page;
+			(*l_page)->next_page = NULL;
+		}
 		return (0);
 	}
 	else if ((*l_page)->next_page)
 	{
 		*curr_page = (*l_page)->next_page;
 		*l_page = (t_header *)(*curr_page);
-		return (-1);
+		return (1);
 	}
-	else if (next_page(l_page, curr_page, pagesize))
-		return (-2);
-	return (-1);
+	next_page(l_page, curr_page, pagesize);
+	return (1);
 }
 
 void		*find_space(void *curr_page, size_t pagesize, size_t req_len)
 {
 	t_header	*l_page;
-	void		*tmp;
-	int			ret;
+	void		*ret;
 
 	l_page = (t_header *)curr_page;
 	while ((void *)l_page < (curr_page + pagesize))
 	{
-		if (!(l_page->used))
+		if (!l_page->used)
 		{
-			if (l_page->next_page)
-			{
-				curr_page = l_page->next_page;
-				l_page = (t_header *)curr_page;
-				continue ;
-			}
-			l_page->mem_seg = (void *)l_page + sizeof(t_header);
 			l_page->page_start = curr_page;
 			if (!l_page->len)
 			{
-				if (!(ret = infinite_block(&curr_page, &l_page, req_len, pagesize)))
-					return (l_page->mem_seg);
-				else if (ret == -2)
-					return (NULL);
+				if (infinite_block(&curr_page, &l_page, req_len, pagesize))
+					continue ;
 			}
 			else
 			{
 				if (!finite_block(&curr_page, &l_page, req_len, pagesize))
-					return (l_page->mem_seg);
+					continue ;
 			}
+			return ((void *)l_page + sizeof(t_header)); 
 		}
-		else
-			l_page = (void *)l_page + l_page->len + sizeof(t_header);
+		if (l_page->next_page)
+		{
+			curr_page = l_page->next_page;
+			l_page = (t_header *)curr_page;
+			continue ;
+		}
+		else if ((void *)l_page + l_page->len + sizeof(t_header) >= (curr_page + pagesize))
+		{
+			next_page(&l_page, &curr_page, pagesize);
+			continue ;
+		}
+		l_page = (void *)l_page + l_page->len + sizeof(t_header);
 	}
+	printf(" Should've never gotten here.\n");
+	exit(21);
 	return (NULL);
 }
 
 void 		*malloc(size_t size)
 {
+	if (size == 0)
+		size = 1;
 	if (size <= TINY)
-		return (size_spacer(0, PAGESIZE(TINY), size));
+		return (size_spacer(TINY_IND, PAGESIZE(TINY), size));
 	if (size > TINY && size < LARGE)
-		return (size_spacer(1, PAGESIZE(LARGE), size));
-	return (large_alloc(size));
+		return (size_spacer(SMALL_IND, PAGESIZE(LARGE), size));
+	return (size_spacer(LARGE_IND, size + sizeof(t_header), size));
 }
 
 void	test_copy(char *test, int total, char c)
@@ -146,7 +161,7 @@ void	test_copy(char *test, int total, char c)
 
 void	matches(char *test, char c)
 {
-	for (int i = 0; i < 100; ++i)
+	for (int i = 0; i < 49; ++i)
 	{
 		if (test[i] != c)
 		{
@@ -157,23 +172,21 @@ void	matches(char *test, char c)
 	}
 }
 
-void	validate(char **test, int total)
+void	validate(char **test, int total, int size, int size2)
 {
 	t_header *head;
-	// if (test[i] - sizeof(t_header))
 	for (int i = 0; i < total; ++i)
 	{
 		if (test[i])
 		{
 
 			head = (void *)test[i] - sizeof(t_header);
-			if (head->len != 128)
+			if (head->len != size && head->len != size2)
 			{
 				printf("Failed %zu\n", head->len);
 				exit(20);
 			}
 			matches(test[i], i + 'A');
-			// printf("%s\n", test[i]);
 		}
 		else
 		{
@@ -182,134 +195,27 @@ void	validate(char **test, int total)
 	}
 }
 
-void 	*thread_func(void *arg)
-{
-	char	*test[3001];
-	int		i;
-
-	i = 0;
-	while (i < 3000)
-	{
-		printf("[%d] ", i);
-		if (!(test[i] = malloc(sizeof(char) * 128)))
-		{
-			printf("Fail bitch\n");
-			exit(-2);
-		}
-		test_copy(test[i], 100, i + 'A');
-		// test[i] = realloc(test[i], 200);
-		// test_copy(test[i], 158, i + 'A');
-		if (!(rand() % 84))
-		{
-			free(test[i]);
-			test[i] = NULL;
-		}
-		validate(test, i);
-		i++;
-	}
-	i = 149;
-	while (i > 0)
-	{
-		free(test[i]);
-		test[i] = NULL;
-		i--;
-	}
-	return (NULL);
-}
-
-// int		main(void)
-// {
-// 	int i;
-// 	int test;
-// 	pthread_t thread[5];
-
-// 	i = 0;
-// 	srand(time(NULL));
-// 	while (i < 5)
-// 	{
-// 		pthread_create(&(thread[0]), NULL, thread_func, (void *)&test);
-// 		i++;
-// 	}
-// 	pthread_join(thread[0],NULL);
-// 	pthread_join(thread[1],NULL);
-// 	pthread_join(thread[2],NULL);
-// 	pthread_join(thread[3],NULL);
-// 	pthread_join(thread[4],NULL);
-// 	exit(42);
-// }
-
-// int 	main(void)
-// {
-// 	char *test;
-
-// 	if (!(test = malloc(sizeof(char) * 101)))
-// 	{
-// 		printf("Failed bitch\n");
-// 		exit(-2);
-// 	}
-// 	test_copy(test, 100, 'A');
-// 	test = realloc(test, 200);
-// 	validate(&test, 0);
-// 	return (42);
-// }
-
 int		main(void)
 {
-	char	*test[3001];
+	char	*test[30001];
 	int		i;
 
 	i = 0;
-	while (i < 100)
+	while (i < 300)
 	{
 		printf("[%d]", i);
-		if (!(test[i] = malloc(sizeof(char) * 128)))
+		if (!(test[i] = malloc(sizeof(char) * 120)))
 		{
 			printf("Fail bitch\n");
 			exit(-2);
 		}
-		printf("----> Ret = %p\n", test[i]);
-		test_copy(test[i], 100, i + 'A');
-		// test[i] = realloc(test[i], 200);
-		validate(test, i);
+		printf("Returned %p\n", test[i]);
+		test_copy(test[i], 119, i + 'A');
+		validate(test, i, 120, 128);
+		test[i] = realloc(test[i], 128);
+		printf("Test[%d] = %p\n", i, test[i]);
+		validate(test, i, 128, 120);
 		i++;
 	}
-	t_header *wtf;
-	int x;
-
-	x = 1;
-	wtf = g_pages[0];
-	printf("wtf = %p head = %p\n", wtf, g_pages[0]);
-	while (1)
-	{
-		if (!wtf->len)
-		{
-			printf("[%d] End of page! -> %p\n", x, wtf->next_page);
-			if (!wtf->next_page)
-				break ;
-		}
-		if (wtf->next_page)
-		{
-			printf("[%d] Next page!!! = %p\n", x, wtf->next_page);
-			wtf = wtf->next_page;
-			x++;
-			continue ;
-		}
-		validate(test, x - 1);
-		printf("[%d]\n", x);
-		wtf = (void *)wtf + sizeof(t_header) + wtf->len;
-		x++;
-	}
-	// printf("End of first page = len - %p -> %p\n", ((t_header *)((void *)test[98] - sizeof(t_header)))->mem_seg, ((t_header *)((void *)test[99] - sizeof(t_header)))->next_page);
-
-	// i = 149;
-	// while (i > 0)
-	// {
-	// 	free(test[i]);
-	// 	test[i] = NULL;
-	// 	i--;
-	// }
-	// test[0] = malloc(sizeof(char));
-	// free(test[0]);
-	// test[0] = malloc(sizeof(char));
 	exit(42);
 }

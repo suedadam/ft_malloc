@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 13:33:19 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/16 16:12:14 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/16 19:26:04 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,17 +24,15 @@
 # define LARGE_IND 2
 # define TINY 128
 # define LARGE 1024
-# define CLEAN_INTERVAL 2
 # define PAGESIZE(x) ((x + sizeof(t_header)) * 100)
 # define PROT_ALL (PROT_READ | PROT_WRITE | PROT_EXEC)
 # define FT_MAP_ANON (MAP_ANONYMOUS | MAP_PRIVATE)
 
-typedef struct	s_header
+typedef struct __attribute__((packed)) s_header
 {
-	void		*mem_seg;
 	size_t		len;
-	uint8_t		used;
-	uint8_t		index;
+	uint8_t		used:1;
+	uint8_t		index:2;
 	void		*page_start;
 	void		*next_page;
 }				t_header;
@@ -53,12 +51,8 @@ void	*init_page(size_t pagesize);
 ** http://man7.org/linux/man-pages/man2/mmap.2.html
 */
 
-void					*g_pages[3];
-static pthread_mutex_t	g_mutex[3] = {
-	PTHREAD_MUTEX_INITIALIZER,
-	PTHREAD_MUTEX_INITIALIZER,
-	PTHREAD_MUTEX_INITIALIZER
-};
+extern void				*g_pages[3];
+extern pthread_mutex_t	g_mutex[3];
 // pthread_mutex_t	g_mutex[3] = {PTHREAD_MUTEX_INITIALIZER, PTHREAD_MUTEX_INITIALIZER, PTHREAD_MUTEX_INITIALIZER};
 
 #endif

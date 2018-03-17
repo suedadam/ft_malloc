@@ -6,11 +6,12 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 17:55:09 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/16 15:47:11 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/16 21:18:51 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_malloc.h"
+#include <time.h>
 
 void	*flip_page(t_header *mem_seg, void *curr_page, int pagemax)
 {
@@ -60,10 +61,6 @@ void	*delete_page(void *prev, t_header *mem_seg, void *curr_page, int pagemax)
 		return (NULL);
 }
 
-/*
-** Never getting delete_page, need to test more why.
-*/
-
 void	cleaning_lady(int *clean_up, int page_index)
 {
 	void		**curr_page;
@@ -74,8 +71,7 @@ void	cleaning_lady(int *clean_up, int page_index)
 	if (page_index < 2)
 	{
 		pthread_mutex_lock(&(g_mutex[page_index]));
-		// Insert solution here... (lol jokes)
-		curr_page = &(g_pages[page_index]); // Fix to double pointer
+		curr_page = &(g_pages[page_index]);
 		l_page = (t_header *)curr_page;
 		// tmp = *curr_page;
 		tmp = NULL;
@@ -121,19 +117,10 @@ void 	free(void *ptr)
 	if (!ptr)
 		return ;
 	l_ptr = ptr - sizeof(t_header);
-	if (l_ptr->index == LARGE_IND)
-		munmap(l_ptr, l_ptr->len + sizeof(t_header));
-	else
-	{
-		pthread_mutex_lock(&g_mutex[0]);
-		pthread_mutex_lock(&g_mutex[1]);
-		pthread_mutex_lock(&g_mutex[2]);
-		l_ptr->used = 0;
-		bzero(ptr, l_ptr->len);
-		pthread_mutex_unlock(&g_mutex[0]);
-		pthread_mutex_unlock(&g_mutex[1]);
-		pthread_mutex_unlock(&g_mutex[2]);		
-	}
+	pthread_mutex_lock(&(g_mutex[l_ptr->index]));
+	l_ptr->used = 0;
+	bzero(ptr, l_ptr->len);
+	pthread_mutex_unlock(&(g_mutex[l_ptr->index]));
 	// if (clean_up++ == CLEAN_INTERVAL)
-		// cleaning_lady(&clean_up, 0);
+	// 	cleaning_lady(&clean_up, 0);
 }

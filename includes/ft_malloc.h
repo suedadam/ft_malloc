@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 13:33:19 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/16 00:15:25 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/16 16:12:14 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 # include <pthread.h>
 # include <string.h>
 
+# define TINY_IND 0
+# define SMALL_IND 1
+# define LARGE_IND 2
 # define TINY 128
 # define LARGE 1024
 # define CLEAN_INTERVAL 2
@@ -31,16 +34,7 @@ typedef struct	s_header
 	void		*mem_seg;
 	size_t		len;
 	uint8_t		used;
-	uint8_t		large;
-#if LARGE < (2^16)
-	uint16_t 	max;
-#else
-#if LARGE < (2^32)
-	uint32_t	max;
-#else
-	uint64_t	max;
-#endif
-#endif
+	uint8_t		index;
 	void		*page_start;
 	void		*next_page;
 }				t_header;
@@ -51,6 +45,8 @@ void 	*realloc(void *ptr, size_t size);
 void	*size_spacer(int page_index, size_t pagesize, size_t size);
 void	*large_alloc(size_t size);
 void	*find_space(void *curr_page, size_t pagesize, size_t req_len);
+int		get_memseg_size(uint8_t index);
+void	*init_page(size_t pagesize);
 
 /*
 ** http://pubs.opengroup.org/onlinepubs/009695399/functions/pthread_mutex_lock.html

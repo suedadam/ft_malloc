@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 17:55:09 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/16 00:14:54 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/16 15:47:11 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,20 +38,26 @@ void	update_last(t_header *curr, void *next, int pagemax)
 	while ((void *)curr < upper_bound)
 	{
 		if (curr->next_page || !curr->len)
+		{
 			curr->next_page = next;
+			return ;
+		}
 		curr = (void *)curr + curr->len;
 	}
 }
 
-void	delete_page(void *prev, t_header *mem_seg, void *curr_page, int pagemax)
+void	*delete_page(void *prev, t_header *mem_seg, void *curr_page, int pagemax)
 {
 	void	*next;
 
 	next = flip_page(mem_seg, curr_page, pagemax);
-	update_last(prev, next, pagemax);
+	if (prev)
+		update_last(prev, next, pagemax);
 	munmap(curr_page, pagemax);
-	printf("Got rid of a page\n");
-	return ;
+	if (!prev)
+		return (next);
+	else
+		return (NULL);
 }
 
 /*
@@ -60,7 +66,7 @@ void	delete_page(void *prev, t_header *mem_seg, void *curr_page, int pagemax)
 
 void	cleaning_lady(int *clean_up, int page_index)
 {
-	void		*curr_page;
+	void		**curr_page;
 	t_header	*l_page;
 	void		*tmp;
 	int			pagemax;
@@ -69,28 +75,36 @@ void	cleaning_lady(int *clean_up, int page_index)
 	{
 		pthread_mutex_lock(&(g_mutex[page_index]));
 		// Insert solution here... (lol jokes)
-		curr_page = g_pages[page_index];
+		curr_page = &(g_pages[page_index]); // Fix to double pointer
 		l_page = (t_header *)curr_page;
-		tmp = curr_page;
-		pagemax = PAGESIZE(l_page->max);
-		while ((void *)l_page < (curr_page + pagemax))
+		// tmp = *curr_page;
+		tmp = NULL;
+		pagemax = PAGESIZE(get_memseg_size(l_page->index));
+		while ((void *)l_page < (*curr_page + pagemax))
 		{
+			printf("{DEL} %p len = %zu\n", *curr_page, l_page->len);
 			if (l_page->used)
 			{
-				tmp = curr_page;
-				if (!(curr_page = flip_page(l_page, curr_page, pagemax)))
+				printf("wat\n");
+				tmp = *curr_page;
+				if (!(*curr_page = flip_page(l_page, *curr_page, pagemax)))
 					break ;
 				l_page = (t_header *)curr_page;
 			}
-			else if (!l_page->len ||
-					(((void *)l_page + l_page->len) >= (curr_page + pagemax)))
+			else if (!l_page->len || l_page->next_page ||
+					(((void *)l_page + l_page->len) >= (*curr_page + pagemax)))
 			{
-				printf("Getting to delete one.\n");
-				delete_page(tmp, l_page, curr_page, pagemax);
+				// printf("Getting to delete one. %p tmp = %p\n", *curr_page, tmp);
+				if (!tmp || (tmp = delete_page(tmp, l_page, *curr_page, pagemax)))
+					*curr_page = tmp;
+				// printf("*curr_page = %p\n", *curr_page);
 				break ;
 			}
 			else
+			{
+				printf("hmmm\n");
 				l_page = (void *)l_page + l_page->len;
+			}
 		}
 		pthread_mutex_unlock(&(g_mutex[page_index]));
 		cleaning_lady(clean_up, page_index + 1);
@@ -107,7 +121,7 @@ void 	free(void *ptr)
 	if (!ptr)
 		return ;
 	l_ptr = ptr - sizeof(t_header);
-	if (l_ptr->large)
+	if (l_ptr->index == LARGE_IND)
 		munmap(l_ptr, l_ptr->len + sizeof(t_header));
 	else
 	{
@@ -120,6 +134,6 @@ void 	free(void *ptr)
 		pthread_mutex_unlock(&g_mutex[1]);
 		pthread_mutex_unlock(&g_mutex[2]);		
 	}
-	if (clean_up++ == CLEAN_INTERVAL)
-		cleaning_lady(&clean_up, 0);
+	// if (clean_up++ == CLEAN_INTERVAL)
+		// cleaning_lady(&clean_up, 0);
 }

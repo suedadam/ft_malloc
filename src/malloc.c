@@ -6,13 +6,13 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 14:37:08 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/16 00:09:17 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/16 17:29:08 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_malloc.h"
 
-static void	*init_page(size_t pagesize)
+void	*init_page(size_t pagesize)
 {
 	void	*tmp;
 
@@ -159,10 +159,19 @@ void	matches(char *test, char c)
 
 void	validate(char **test, int total)
 {
+	t_header *head;
+	// if (test[i] - sizeof(t_header))
 	for (int i = 0; i < total; ++i)
 	{
 		if (test[i])
 		{
+
+			head = (void *)test[i] - sizeof(t_header);
+			if (head->len != 128)
+			{
+				printf("Failed %zu\n", head->len);
+				exit(20);
+			}
 			matches(test[i], i + 'A');
 			// printf("%s\n", test[i]);
 		}
@@ -175,20 +184,21 @@ void	validate(char **test, int total)
 
 void 	*thread_func(void *arg)
 {
-	char	*test[151];
+	char	*test[3001];
 	int		i;
 
 	i = 0;
-	while (i < 150)
+	while (i < 3000)
 	{
 		printf("[%d] ", i);
-		if (!(test[i] = malloc(sizeof(char) * 101)))
+		if (!(test[i] = malloc(sizeof(char) * 128)))
 		{
 			printf("Fail bitch\n");
 			exit(-2);
 		}
 		test_copy(test[i], 100, i + 'A');
-		test[i] = realloc(test[i], 200);
+		// test[i] = realloc(test[i], 200);
+		// test_copy(test[i], 158, i + 'A');
 		if (!(rand() % 84))
 		{
 			free(test[i]);
@@ -227,32 +237,79 @@ void 	*thread_func(void *arg)
 // 	pthread_join(thread[4],NULL);
 // 	exit(42);
 // }
+
+// int 	main(void)
+// {
+// 	char *test;
+
+// 	if (!(test = malloc(sizeof(char) * 101)))
+// 	{
+// 		printf("Failed bitch\n");
+// 		exit(-2);
+// 	}
+// 	test_copy(test, 100, 'A');
+// 	test = realloc(test, 200);
+// 	validate(&test, 0);
+// 	return (42);
+// }
+
 int		main(void)
 {
-	char	*test[150];
+	char	*test[3001];
 	int		i;
 
 	i = 0;
-	while (i < 150)
+	while (i < 100)
 	{
-		printf("[%d]\n", i);
-		if (!(test[i] = malloc(sizeof(char) * 101)))
+		printf("[%d]", i);
+		if (!(test[i] = malloc(sizeof(char) * 128)))
 		{
 			printf("Fail bitch\n");
 			exit(-2);
 		}
+		printf("----> Ret = %p\n", test[i]);
 		test_copy(test[i], 100, i + 'A');
-		test[i] = realloc(test[i], 200);
+		// test[i] = realloc(test[i], 200);
 		validate(test, i);
 		i++;
 	}
+	t_header *wtf;
+	int x;
 
-	i = 149;
-	while (i > 0)
+	x = 1;
+	wtf = g_pages[0];
+	printf("wtf = %p head = %p\n", wtf, g_pages[0]);
+	while (1)
 	{
-		free(test[i]);
-		test[i] = NULL;
-		i--;
+		if (!wtf->len)
+		{
+			printf("[%d] End of page! -> %p\n", x, wtf->next_page);
+			if (!wtf->next_page)
+				break ;
+		}
+		if (wtf->next_page)
+		{
+			printf("[%d] Next page!!! = %p\n", x, wtf->next_page);
+			wtf = wtf->next_page;
+			x++;
+			continue ;
+		}
+		validate(test, x - 1);
+		printf("[%d]\n", x);
+		wtf = (void *)wtf + sizeof(t_header) + wtf->len;
+		x++;
 	}
+	// printf("End of first page = len - %p -> %p\n", ((t_header *)((void *)test[98] - sizeof(t_header)))->mem_seg, ((t_header *)((void *)test[99] - sizeof(t_header)))->next_page);
+
+	// i = 149;
+	// while (i > 0)
+	// {
+	// 	free(test[i]);
+	// 	test[i] = NULL;
+	// 	i--;
+	// }
+	// test[0] = malloc(sizeof(char));
+	// free(test[0]);
+	// test[0] = malloc(sizeof(char));
 	exit(42);
 }

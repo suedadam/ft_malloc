@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 18:30:04 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/15 21:47:03 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/16 14:40:59 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ int		space_avail(t_header *l_ptr, size_t size)
 	{
 		if (post_segs->used)
 			return (-1);
-		if (!post_segs->len)
+		if (!post_segs->len &&
+			!post_segs->next_page)
 		{
 			avail = size;
 			break ;
@@ -40,6 +41,7 @@ int		space_avail(t_header *l_ptr, size_t size)
 		post_segs = ((void *)post_segs) + post_segs->len;
 	}
 	bzero(((void *)l_ptr) + sizeof(t_header) + l_ptr->len, avail - l_ptr->len);
+	l_ptr->len = avail;
 	return (0);
 }
 
@@ -47,13 +49,15 @@ void 	*realloc(void *ptr, size_t size)
 {
 	t_header	*l_ptr;
 	void		*copy;
+	int			max;
 
 	if (!ptr)
 		return (malloc(size));
 	l_ptr = ptr - sizeof(t_header);
+	max = get_memseg_size(l_ptr->index);
 	if (l_ptr->len < size)
 	{
-		if (!l_ptr->large && size < l_ptr->max &&
+		if (l_ptr->index != LARGE_IND && size < max &&
 			!l_ptr->next_page && !space_avail(l_ptr, size))
 			return (ptr);
 		copy = malloc(size);
@@ -61,6 +65,8 @@ void 	*realloc(void *ptr, size_t size)
 		free(ptr);
 		return (copy);
 	}
+	else if (size < l_ptr->len && size > 0)
+		return (ptr);
 	free(ptr);
 	return (NULL);
 }

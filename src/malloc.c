@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 14:37:08 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 03:34:27 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 05:13:15 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,14 +108,11 @@ void		*find_space(void *curr_page, size_t pagesize, size_t req_len)
 			continue ;
 		l_page = (void *)l_page + l_page->len + sizeof(t_header);
 	}
-	printf(" Should've never gotten here.\n");
-	exit(21);
 	return (NULL);
 }
 
 void		*malloc(size_t size)
 {
-	printf("Using Adam's cool Malloc\n");
 	if (size == 0)
 		size = 1;
 	if (size <= TINY)

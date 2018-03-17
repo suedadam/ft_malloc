@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 13:33:19 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 03:47:34 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 05:33:49 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 # define TINY_IND 0
 # define SMALL_IND 1
 # define LARGE_IND 2
-# define CLEAN_INTERVAL 1
+# define CLEAN_INTERVAL 10
 # define MAX_PER_PAGE 300
 # define TINY 128
 # define LARGE 2048

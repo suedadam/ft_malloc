@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 17:26:22 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 03:37:02 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/17 05:13:23 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ void	*size_spacer(int page_index, size_t pagesize, size_t size)
 	pthread_mutex_t	*mutex_lock;
 	void			*mem_seg;
 
-	// printf("what the fuck\n");
 	fetched_seg = &(g_pages[page_index]);
 	mutex_lock = &(g_mutex[page_index]);
 	pthread_mutex_lock(mutex_lock);

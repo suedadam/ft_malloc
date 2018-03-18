@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 13:33:42 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/18 03:37:12 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/18 05:16:38 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static void	add_to_end(void **head, void *mem_seg)
 		curr_page = ((t_header *)curr_page)->next_page;
 	}
 	((t_header *)curr_page)->next_page = mem_seg;
-	((t_header *)(curr_page))->chksum = chksum(mem_seg);
+	((t_header *)(curr_page))->chksum = chksum(curr_page);
 }
 
 void		*alloc_large(int page_index, size_t pagesize, size_t req_len)

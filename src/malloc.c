@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   malloc.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 14:37:08 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/18 01:32:21 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/18 03:34:21 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static int	finite_block(void **curr_page, t_header **l_page,
 	if ((*l_page)->len >= req_len)
 	{
 		(*l_page)->used = 1;
-		return (req_len);
+		return (0);
 	}
 	else if ((*l_page)->next_page)
 	{
@@ -36,7 +36,7 @@ static int	finite_block(void **curr_page, t_header **l_page,
 		*l_page = ((void *)(*l_page)) + (*l_page)->len;
 	else
 		next_page(l_page, curr_page, pagesize);
-	return (0);
+	return (1);
 }
 
 static int	infinite_block(void **curr_page, t_header **l_page,
@@ -91,7 +91,7 @@ void		*find_space(void *curr_page, size_t pagesize, size_t req_len)
 	t_header	*l_page;
 
 	l_page = (t_header *)curr_page;
-	while ((void *)l_page < (curr_page + pagesize))
+	while (l_page && (void *)l_page < (curr_page + pagesize))
 	{
 		if (!l_page->used)
 		{
@@ -101,9 +101,9 @@ void		*find_space(void *curr_page, size_t pagesize, size_t req_len)
 				if (infinite_block(&curr_page, &l_page, req_len, pagesize))
 					continue ;
 			}
-			else if (!finite_block(&curr_page, &l_page, req_len, pagesize))
+			else if (finite_block(&curr_page, &l_page, req_len, pagesize))
 				continue ;
-			return ((void *)l_page + sizeof(t_header));
+			return ((void *)l_page);
 		}
 		if (used_seg(&l_page, &curr_page, pagesize))
 			continue ;

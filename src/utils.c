@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 00:14:58 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/18 01:48:14 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/18 03:36:09 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ int		next_page(t_header **l_page, void **curr_page, size_t pagesize)
 	if (!(tmp = init_page(pagesize)))
 		return (-1);
 	(*l_page)->next_page = tmp;
+	(*l_page)->chksum = chksum(*l_page);
 	*curr_page = tmp;
 	(*l_page) = (t_header *)(*curr_page);
 	return (0);

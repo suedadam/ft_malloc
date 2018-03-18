@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   page_size.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 17:26:22 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/18 01:32:09 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/18 03:25:53 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,12 @@ void	*size_spacer(int page_index, size_t pagesize, size_t size)
 		if (!(*fetched_seg = init_page(pagesize)))
 			return (NULL);
 	}
-	mem_seg = find_space(*fetched_seg, pagesize, size);
-	((t_header *)(mem_seg - sizeof(t_header)))->index = page_index;
-	((t_header *)(mem_seg - sizeof(t_header)))->chksum =
-				chksum(mem_seg - sizeof(t_header));
+	if (!(mem_seg = find_space(*fetched_seg, pagesize, size)))
+		return (NULL);
+	((t_header *)mem_seg)->index = page_index;
+	((t_header *)mem_seg)->chksum = chksum(mem_seg);
 	pthread_mutex_unlock(mutex_lock);
-	return (mem_seg);
+	return (mem_seg + sizeof(t_header));
 }
 
 int		get_memseg_size(uint8_t index)

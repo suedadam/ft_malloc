@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 15:42:46 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 15:43:02 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/18 00:43:47 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void			*find_space(void *curr_page, size_t pagesize, size_t req_len);
 int				get_memseg_size(uint8_t index);
 void			*init_page(size_t pagesize);
 int				next_page(t_header **l_page, void **curr_page, size_t pagesize);
-int				align_pagesize(size_t x);
+int				align_pagesize(size_t x, int large);
 int				valid_chksum(void *l_ptr);
 uint8_t			chksum(void *mem);
 void			show_alloc_mem(void);

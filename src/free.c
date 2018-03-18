@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 17:55:09 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 14:47:27 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/18 01:31:25 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,7 @@ void	tear_page(t_header **l_page, void **curr_page,
 	tmp = *curr_page;
 	flip_page(l_page, curr_page, pagesize);
 	if (page_index == LARGE_IND)
-		munmap(tmp,
-			align_pagesize(((t_header *)(*l_page))->len + sizeof(t_header)));
+		munmap(tmp, align_pagesize(((t_header *)(*l_page))->len, 1));
 	else
 		munmap(tmp, pagesize);
 }
@@ -78,7 +77,7 @@ void	cleaning_lady(int *clean_up, int page_index)
 		{
 			pthread_mutex_lock(&(g_mutex[page_index]));
 			look_through(&(g_pages[page_index]),
-					align_pagesize(get_memseg_size(page_index)), page_index);
+					align_pagesize(get_memseg_size(page_index), 0), page_index);
 			pthread_mutex_unlock(&(g_mutex[page_index]));
 			cleaning_lady(clean_up, page_index + 1);
 		}
@@ -96,7 +95,10 @@ void	free(void *ptr)
 		return ;
 	l_ptr = ptr - sizeof(t_header);
 	if (!valid_chksum(l_ptr))
+	{
+		// ft_printf("Invalid\n");
 		return ;
+	}
 	pthread_mutex_lock(&(g_mutex[l_ptr->index]));
 	l_ptr->used = 0;
 	ft_bzero(ptr, l_ptr->len);

@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 12:35:41 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 15:08:39 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/18 00:48:21 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void		print_pagesegs(int page_index, size_t *total)
 
 	curr_page = g_pages[page_index];
 	l_page = (t_header *)curr_page;
-	pagesize = align_pagesize(get_memseg_size(page_index));
+	pagesize = align_pagesize(get_memseg_size(page_index), 0);
 	while (l_page && (void *)l_page < (curr_page + pagesize))
 	{
 		if (l_page->used)

@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 14:37:08 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 14:47:18 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/18 01:32:21 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,9 +117,9 @@ void		*malloc(size_t size)
 	if (size == 0)
 		size = 1;
 	if (size <= TINY)
-		return (size_spacer(TINY_IND, align_pagesize(TINY), size));
+		return (size_spacer(TINY_IND, align_pagesize(TINY, 0), size));
 	if (size > TINY && size < LARGE)
-		return (size_spacer(SMALL_IND, align_pagesize(LARGE), size));
+		return (size_spacer(SMALL_IND, align_pagesize(LARGE, 0), size));
 	return (alloc_large(LARGE_IND,
-			align_pagesize(size + sizeof(t_header)), size));
+			align_pagesize(size, 1), size));
 }

@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 15:42:46 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 15:43:11 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/19 16:04:14 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,23 +23,19 @@ int		space_avail(t_header *l_ptr, size_t size)
 	{
 		if (post_segs->used)
 			return (1);
-		if (!post_segs->len &&
-			!post_segs->next_page)
+		if (!post_segs->len && !post_segs->next_page)
 		{
 			avail = size;
 			break ;
 		}
-		if (post_segs->next_page)
-		{
-			if (avail + post_segs->len >= size)
-				l_ptr->next_page = post_segs->next_page;
-			else
-				return (1);
-		}
+		if (post_segs->next_page && avail + post_segs->len >= size)
+			l_ptr->next_page = post_segs->next_page;
+		else if (post_segs->next_page)
+			return (1);
 		avail += post_segs->len;
-		post_segs = ((void *)post_segs) + post_segs->len;
+		post_segs = OFFP_HEADER(post_segs);
 	}
-	ft_bzero(((void *)l_ptr) + sizeof(t_header) + l_ptr->len, avail - l_ptr->len);
+	ft_bzero(OFFP_HEADER(l_ptr), avail - l_ptr->len);
 	l_ptr->len = avail;
 	return (0);
 }

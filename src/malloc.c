@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 14:37:08 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 14:47:18 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/19 15:57:20 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,18 +25,18 @@ static int	finite_block(void **curr_page, t_header **l_page,
 	if ((*l_page)->len >= req_len)
 	{
 		(*l_page)->used = 1;
-		return (req_len);
+		return (0);
 	}
 	else if ((*l_page)->next_page)
 	{
 		*curr_page = (*l_page)->next_page;
 		*l_page = (t_header *)(*curr_page);
 	}
-	else if ((((void *)(*l_page)) + (*l_page)->len) < (*curr_page + pagesize))
-		*l_page = ((void *)(*l_page)) + (*l_page)->len;
+	else if (OFFP_HEADER((*l_page)) < (*curr_page + pagesize))
+		*l_page = OFFP_HEADER((*l_page));
 	else
 		next_page(l_page, curr_page, pagesize);
-	return (0);
+	return (1);
 }
 
 static int	infinite_block(void **curr_page, t_header **l_page,
@@ -44,8 +44,8 @@ static int	infinite_block(void **curr_page, t_header **l_page,
 {
 	void	*void_page;
 
-	void_page = ((void *)(*l_page)) + sizeof(t_header);
-	if ((void_page + req_len) <= (*curr_page + pagesize))
+	void_page = (void *)(*l_page);
+	if ((void_page + req_len + sizeof(t_header)) <= (*curr_page + pagesize))
 	{
 		(*l_page)->used = 1;
 		(*l_page)->len = req_len;
@@ -77,8 +77,7 @@ int			used_seg(t_header **l_page, void **curr_page, size_t pagesize)
 		*l_page = (t_header *)(*curr_page);
 		return (1);
 	}
-	if (((void *)(*l_page)) + (*l_page)->len + sizeof(t_header) >=
-		(*curr_page + pagesize))
+	if (OFFP_HEADER((*l_page)) >= (*curr_page + pagesize))
 	{
 		next_page(l_page, curr_page, pagesize);
 		return (1);
@@ -91,7 +90,7 @@ void		*find_space(void *curr_page, size_t pagesize, size_t req_len)
 	t_header	*l_page;
 
 	l_page = (t_header *)curr_page;
-	while ((void *)l_page < (curr_page + pagesize))
+	while (l_page && (void *)l_page < (curr_page + pagesize))
 	{
 		if (!l_page->used)
 		{
@@ -101,13 +100,13 @@ void		*find_space(void *curr_page, size_t pagesize, size_t req_len)
 				if (infinite_block(&curr_page, &l_page, req_len, pagesize))
 					continue ;
 			}
-			else if (!finite_block(&curr_page, &l_page, req_len, pagesize))
+			else if (finite_block(&curr_page, &l_page, req_len, pagesize))
 				continue ;
-			return ((void *)l_page + sizeof(t_header));
+			return ((void *)l_page);
 		}
 		if (used_seg(&l_page, &curr_page, pagesize))
 			continue ;
-		l_page = (void *)l_page + l_page->len + sizeof(t_header);
+		l_page = OFFP_HEADER(l_page);
 	}
 	return (NULL);
 }
@@ -117,9 +116,9 @@ void		*malloc(size_t size)
 	if (size == 0)
 		size = 1;
 	if (size <= TINY)
-		return (size_spacer(TINY_IND, align_pagesize(TINY), size));
+		return (size_spacer(TINY_IND, align_pagesize(TINY, 0), size));
 	if (size > TINY && size < LARGE)
-		return (size_spacer(SMALL_IND, align_pagesize(LARGE), size));
+		return (size_spacer(SMALL_IND, align_pagesize(LARGE, 0), size));
 	return (alloc_large(LARGE_IND,
-			align_pagesize(size + sizeof(t_header)), size));
+			align_pagesize(size, 1), size));
 }

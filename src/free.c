@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/15 17:55:09 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 14:47:27 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/19 15:56:46 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,13 @@ void	flip_page(t_header **l_page, void **curr_page, size_t pagesize)
 	while (((void *)*l_page) < (*curr_page + pagesize))
 	{
 		if ((*l_page)->next_page || !(*l_page)->len ||
-			((void *)(*l_page)) + (*l_page)->len >= (*curr_page + pagesize))
+			OFFP_HEADER((*l_page)) >= (*curr_page + pagesize))
 		{
 			*curr_page = (*l_page)->next_page;
 			*l_page = *curr_page;
 			return ;
 		}
-		*l_page = ((void *)(*l_page)) + (*l_page)->len;
+		*l_page = (void *)(*l_page) + (*l_page)->len + sizeof(t_header);
 	}
 }
 
@@ -35,8 +35,7 @@ void	tear_page(t_header **l_page, void **curr_page,
 	tmp = *curr_page;
 	flip_page(l_page, curr_page, pagesize);
 	if (page_index == LARGE_IND)
-		munmap(tmp,
-			align_pagesize(((t_header *)(*l_page))->len + sizeof(t_header)));
+		munmap(tmp, align_pagesize(((t_header *)(*l_page))->len, 1));
 	else
 		munmap(tmp, pagesize);
 }
@@ -53,7 +52,7 @@ void	look_through(void **head_page, size_t pagesize, int page_index)
 		if (l_page->used)
 			flip_page(&l_page, &curr_page, pagesize);
 		else if (!l_page->len || l_page->next_page
-			|| (void *)l_page + l_page->len >= (curr_page + pagesize))
+			|| OFFP_HEADER(l_page) >= (curr_page + pagesize))
 		{
 			if (*head_page == curr_page)
 			{
@@ -64,7 +63,7 @@ void	look_through(void **head_page, size_t pagesize, int page_index)
 				tear_page(&l_page, &curr_page, pagesize, page_index);
 		}
 		else
-			l_page = (void *)l_page + l_page->len;
+			l_page = (void *)l_page + l_page->len + sizeof(t_header);
 	}
 }
 
@@ -78,7 +77,7 @@ void	cleaning_lady(int *clean_up, int page_index)
 		{
 			pthread_mutex_lock(&(g_mutex[page_index]));
 			look_through(&(g_pages[page_index]),
-					align_pagesize(get_memseg_size(page_index)), page_index);
+				align_pagesize(get_memseg_size(page_index), 0), page_index);
 			pthread_mutex_unlock(&(g_mutex[page_index]));
 			cleaning_lady(clean_up, page_index + 1);
 		}

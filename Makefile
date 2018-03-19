@@ -11,7 +11,7 @@ endif
 MALLOC = libft_malloc_${HOSTTYPE}.so
 CC = gcc
 OBJFLAGS = -g -Wall -Werror -Wextra -c -fPIC
-LIBFLAGS = -g -shared
+LIBFLAGS = -g -shared -ldl
 LIBFT = deps/ft_printf/libft/libft.a
 LIBPRINTF = deps/ft_printf/libftprintf.a
 SOURCE_DIR = src
@@ -23,7 +23,8 @@ MALLOC_SRC = \
 	utils \
 	show_alloc \
 	alloc_large \
-	large_free
+	large_free \
+	chksum
 
 MALLOC_OBJ = $(patsubst %, obj/%.o, $(MALLOC_SRC))
 INC = -I deps/ft_printf

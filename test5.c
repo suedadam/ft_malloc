@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   test5.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 03:09:27 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/17 03:10:23 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/19 15:32:40 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <unistd.h>
@@ -25,9 +25,7 @@ int    main()
 
    addr = malloc(16);
    free(NULL);
-   printf("Not there!\n");
    free((void *)addr + 5);
-   printf("there?\n");
    if (realloc((void *)addr + 5, 10) == NULL)
     print("Bonjours\n");
 }

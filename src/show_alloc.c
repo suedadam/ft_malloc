@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 12:35:41 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/18 00:48:21 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/19 15:59:57 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,7 @@ void		print_pagesegs(int page_index, size_t *total)
 		if (l_page->used)
 		{
 			ft_printf("%p - %p : %zu bytes\n", (void *)l_page +
-				sizeof(t_header), (void *)l_page +
-				sizeof(t_header) + l_page->len, l_page->len);
+				sizeof(t_header), OFFP_HEADER(l_page), l_page->len);
 			*total += l_page->len;
 		}
 		if (l_page->next_page || OFFP_HEADER(l_page) > curr_page + pagesize)
@@ -35,7 +34,7 @@ void		print_pagesegs(int page_index, size_t *total)
 			flip_page(&l_page, &curr_page, pagesize);
 			continue ;
 		}
-		l_page = (void *)l_page + l_page->len + sizeof(t_header);
+		l_page = OFFP_HEADER(l_page);
 	}
 	print_pageheader(page_index + 1, total);
 }
@@ -51,8 +50,7 @@ static void	print_large(size_t *total)
 	{
 		l_page = (t_header *)curr_page;
 		ft_printf("%p - %p : %zu bytes\n", (void *)l_page +
-			sizeof(t_header), (void *)l_page + sizeof(t_header) +
-				l_page->len, l_page->len);
+			sizeof(t_header), OFFP_HEADER(l_page), l_page->len);
 		*total += l_page->len;
 		curr_page = l_page->next_page;
 	}

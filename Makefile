@@ -23,7 +23,8 @@ MALLOC_SRC = \
 	utils \
 	show_alloc \
 	alloc_large \
-	large_free
+	large_free \
+	chksum
 
 MALLOC_OBJ = $(patsubst %, obj/%.o, $(MALLOC_SRC))
 INC = -I deps/ft_printf

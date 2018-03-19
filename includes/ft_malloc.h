@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 15:42:46 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/19 15:56:53 by asyed            ###   ########.fr       */
+/*   Updated: 2018/03/19 16:13:46 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ void			flip_page(t_header **l_page, void **curr_page, size_t pagesize);
 void			*alloc_large(int page_index, size_t pagesize, size_t req_len);
 void			update_prev(void *prev, void *next);
 void			cleanup_tty(void);
+int				non_allocated(void *ptr, int page_index);
 
 extern void				*g_pages[3];
 extern pthread_mutex_t	g_mutex[3];

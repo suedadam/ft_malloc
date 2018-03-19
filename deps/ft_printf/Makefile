@@ -63,6 +63,7 @@ clean:
 	@echo "$(RED)Object files removed$(NC)"
 
 fclean: clean
+	@rm -f $(PRINTF_OBJ)
 	@make -C libft fclean
 	@rm -f $(NAME)
 	@echo "$(BLUE) $(NAME) removed$(NC)"

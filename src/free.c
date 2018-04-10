@@ -50,9 +50,11 @@ static void	free_page(void *page_start)
 static void *page_check(void *page)
 {
 	void	*ptr;
+	size_t	pagesize;
 
 	ptr = ((t_info *)page)->page_start;
-	while (ptr < ((t_info *)page)->page_start + align_pagesize(index2size(((t_header *)page)->index), 0))
+	pagesize = guess_pagesize(((t_header *)page)->index);
+	while (ptr < ((t_info *)page)->page_start + pagesize)
 	{
 		if (((t_header *)ptr)->used)
 			return (NULL);
@@ -62,7 +64,7 @@ static void *page_check(void *page)
 	}
 	((t_info *)page)->pageid = (void *)-1;
 	free_page(((t_info *)page)->page_start);
-	munmap(((t_info *)page)->page_start, align_pagesize(index2size(((t_header *)page)->index), 0));
+	munmap(((t_info *)page)->page_start, pagesize);
 	return (NULL);
 }
 

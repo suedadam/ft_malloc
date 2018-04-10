@@ -27,7 +27,7 @@
 # define LARGE_IND 2
 # define CLEAN_INTERVAL 5
 # define MAX_PER_PAGE 300
-# define MAXPAGES 300
+# define MAXPAGES 65536 //Worst case ~3GB allocated before running out.
 # define TINY 128
 # define LARGE 2048
 # define PAGESIZE(x) ((x + sizeof(t_header)) * MAX_PER_PAGE)
@@ -65,6 +65,7 @@ void		free(void *ptr);
 void		*malloc(size_t size);
 void		*realloc(void *ptr, size_t size);
 size_t		align_pagesize(size_t x, int large);
+size_t		guess_pagesize(uint8_t pageid);
 void		*new_page(size_t size);
 
 pthread_t				pageid[MAXPAGES];

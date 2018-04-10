@@ -14,29 +14,44 @@
 
 t_tree			g_segments;
 
+size_t		guess_pagesize(uint8_t pageid)
+{
+	static int	tiny = 0;
+	static int	small = 0;
+
+	if (!tiny)
+	{
+		tiny = align_pagesize(TINY, 0);
+		small = align_pagesize(LARGE, 0);
+	}
+	if (pageid == TINY_IND)
+		return (tiny);
+	return (small);
+}
+
 void		*resize_segment(t_header **seg, size_t size)
 {
 	t_header	*ret;
+	uint8_t		index;
 
 	if (!(ret = *seg))
 		return (NULL);
+	index = index_calc(size);
 	if (((void *)ret + sizeof(t_header) + size) <
-		((void *)((t_header *)ret)->page_start) +
-		align_pagesize(index2size(index_calc(size)), 0) &&
+		((void *)((t_header *)ret)->page_start) + guess_pagesize(index) &&
 		kill_cleaner(ret) == EXIT_SUCCESS)
 	{
-		if (*seg)
-			((t_header *)(((void *)ret) + sizeof(t_header) + size))->next = (*seg)->next;
+		((t_header *)(((void *)ret) + sizeof(t_header) + size))->next = (*seg)->next;
 		*seg = ((void *)ret) + sizeof(t_header) + size;
 		ret->len = size;
 		ret->used = 1;
-		ret->index = index_calc(size);
+		ret->index = index;
 		ret->chksum = chksum(ret);
 		(*seg)->page_start = ((t_header *)ret)->page_start;
+		(*seg)->pageid = ((t_header *)ret)->pageid;
 		return (((void *)ret) + sizeof(t_header));
 	}
-	else
-		return (new_page(size));
+	return (new_page(size));
 }
 
 size_t		align_pagesize(size_t x, int large)
@@ -55,11 +70,12 @@ size_t		align_pagesize(size_t x, int large)
 
 void		*new_page(size_t size)
 {
-	t_header	*tmp;
-	uint8_t		index;
+	static uint16_t	pageid = 0;
+	t_header		*tmp;
+	uint8_t			index;
 
 	index = index_calc(size);
-	if ((tmp = mmap(NULL, align_pagesize(index2size(index), 0), PROT_ALL, FT_MAP_ANON, -1, 0))
+	if ((tmp = mmap(NULL, guess_pagesize(index), PROT_ALL, FT_MAP_ANON, -1, 0))
 				== MAP_FAILED)
 		return (NULL);
 	tmp->page_start = tmp;
@@ -67,24 +83,28 @@ void		*new_page(size_t size)
 	tmp->used = 1;
 	tmp->index = index;
 	tmp->chksum = chksum(tmp);
+	tmp->pageid = pageid;
 	((t_header *)(((void *)tmp) + sizeof(t_header) + size))->next = g_segments.avail_segs[0];
 	g_segments.avail_segs[0] = (((void *)tmp) + sizeof(t_header) + size);
 	((t_header *)g_segments.avail_segs[0])->page_start = tmp;
+	((t_header *)g_segments.avail_segs[0])->pageid = pageid++;
 	return (((void *)tmp) + sizeof(t_header));
 }
 
 void	*large_allocation(size_t size)
 {
 	t_header	*tmp;
+	size_t		pagesize;
 
-	if ((tmp = mmap(NULL, align_pagesize(size, 1), PROT_ALL, FT_MAP_ANON, -1, 0))
+	pagesize = align_pagesize(size, 1);
+	if ((tmp = mmap(NULL, pagesize, PROT_ALL, FT_MAP_ANON, -1, 0))
 				== MAP_FAILED)
 	{
 		printf("Failed to mmap (%s)\n", strerror(errno));
 		return (NULL);
 	}
 	tmp->page_start = tmp;
-	tmp->len = align_pagesize(size, 1);
+	tmp->len = pagesize;
 	tmp->used = 1;
 	tmp->index = 2;
 	tmp->chksum = chksum(tmp);

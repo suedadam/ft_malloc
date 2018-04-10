@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_malloc.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 15:42:46 by asyed             #+#    #+#             */
-/*   Updated: 2018/04/09 22:32:26 by asyed            ###   ########.fr       */
+/*   Updated: 2018/04/10 00:20:56 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # define TINY_IND 0
 # define SMALL_IND 1
 # define LARGE_IND 2
-# define CLEAN_INTERVAL 1
+# define CLEAN_INTERVAL 5
 # define MAX_PER_PAGE 300
 # define MAXPAGES 300
 # define TINY 128

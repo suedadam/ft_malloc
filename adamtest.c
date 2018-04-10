@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   adamtest.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/09 13:49:46 by asyed             #+#    #+#             */
-/*   Updated: 2018/04/09 22:33:37 by asyed            ###   ########.fr       */
+/*   Updated: 2018/04/10 00:22:51 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	main(void)
 	sleep(10);
 	ret = malloc(28);
 	printf("3 ok %p\n", ret);
-	free(ret);
-	while(1);
+	// free(ret);
+	// while(1);
 	// adam_malloc(1024);
 }

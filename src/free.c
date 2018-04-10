@@ -6,19 +6,11 @@
 /*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/09 16:19:12 by asyed             #+#    #+#             */
-/*   Updated: 2018/04/10 00:21:35 by asyed            ###   ########.fr       */
+/*   Updated: 2018/04/10 01:30:56 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_malloc.h"
-
-static inline __attribute__((always_inline)) int	index2size(uint8_t index)
-{
-	if (index == 1)
-		return (TINY);
-	else
-		return (LARGE);
-}
 
 void	remove_dangling(t_header **segs, void *match)
 {
@@ -109,6 +101,8 @@ void	free(void *ptr)
 	pthread_t	thread;
 	t_header 	*seg;
 
+	if (!ptr)
+		return ;
 	if (i == 0)
 	{
 		printf("Creating thread.\n");
@@ -123,7 +117,7 @@ void	free(void *ptr)
 	seg = ((t_header *)(ptr - sizeof(t_header)));
 	if (!valid_chksum(seg))
 		return ;
-	if (seg->index == 2)
+	if (seg->index == LARGE_IND)
 	{
 		munmap(seg, seg->len);
 		return ;

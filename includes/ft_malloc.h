@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 15:42:46 by asyed             #+#    #+#             */
-/*   Updated: 2018/04/10 00:20:56 by asyed            ###   ########.fr       */
+/*   Updated: 2018/04/10 00:28:44 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@
 # define PAGESIZE(x) ((x + sizeof(t_header)) * MAX_PER_PAGE)
 # define PROT_ALL (PROT_READ | PROT_WRITE | PROT_EXEC)
 # define FT_MAP_ANON (MAP_ANONYMOUS | MAP_PRIVATE | MAP_NOCACHE)
-# define OFFP_HEADER(x) ((void *)x + x->len + sizeof(t_header))
 
 typedef struct __attribute__((packed))	s_header
 {
@@ -57,6 +56,10 @@ typedef struct	s_tree
 	t_header	*avail_segs[LARGE];
 }				t_tree;
 
+int			kill_cleaner(t_header *mem);
+uint8_t		chksum(void *mem);
+int			index_calc(size_t size);
+int			index2size(uint8_t index);
 int			valid_chksum(void *ptr);
 void		free(void *ptr);
 void		*malloc(size_t size);
@@ -64,6 +67,6 @@ void		*realloc(void *ptr, size_t size);
 size_t		align_pagesize(size_t x, int large);
 void		*new_page(size_t size);
 
-pthread_t		pageid[MAXPAGES];
+pthread_t				pageid[MAXPAGES];
 extern t_tree			g_segments;
 #endif

@@ -3,70 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   malloc.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 14:37:08 by asyed             #+#    #+#             */
-/*   Updated: 2018/04/09 22:35:09 by asyed            ###   ########.fr       */
+/*   Updated: 2018/04/10 01:43:20 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_malloc.h"
 
 t_tree			g_segments;
-
-/*
-** Use this. How do you initialize all of them...?
-*/
-
-pthread_mutex_t	g_mutex[LARGE + 1] = {
-	PTHREAD_MUTEX_INITIALIZER
-};
-
-static inline __attribute__((always_inline)) int		kill_cleaner(t_header *mem)
-{
-	if (pageid[mem->pageid])
-	{
-		if (pageid[mem->pageid] == (void *)-1)
-			return (EXIT_FAILURE);
-		pthread_cancel(pageid[mem->pageid]);
-		pageid[mem->pageid] = NULL;
-	}
-	return (EXIT_SUCCESS);
-}
-
-static inline __attribute__((always_inline)) uint8_t	chksum(void *mem)
-{
-	uint8_t		sum;
-	size_t		i;
-
-	sum = 0;
-	i = 0;
-	((t_header *)mem)->chksum = 0;
-	while (i++ < sizeof(t_header))
-	{
-		sum += *(unsigned char *)mem;
-		mem++;
-	}
-	return (sum);
-}
-
-static inline __attribute__((always_inline)) int	index_calc(size_t size)
-{
-	if (size < TINY)
-		return (0);
-	else if (size < LARGE)
-		return (1);
-	else
-		return (2);
-}
-
-static inline __attribute__((always_inline)) int	index2size(uint8_t index)
-{
-	if (index == 1)
-		return (TINY);
-	else
-		return (LARGE);
-}
 
 void		*resize_segment(t_header **seg, size_t size)
 {
@@ -116,10 +62,10 @@ void		*new_page(size_t size)
 	if ((tmp = mmap(NULL, align_pagesize(index2size(index), 0), PROT_ALL, FT_MAP_ANON, -1, 0))
 				== MAP_FAILED)
 		return (NULL);
-	((t_header *)tmp)->page_start = tmp;
-	((t_header *)tmp)->len = size;
-	((t_header *)tmp)->used = 1;
-	((t_header *)tmp)->index = index_calc(size);
+	tmp->page_start = tmp;
+	tmp->len = size;
+	tmp->used = 1;
+	tmp->index = index;
 	tmp->chksum = chksum(tmp);
 	((t_header *)(((void *)tmp) + sizeof(t_header) + size))->next = g_segments.avail_segs[0];
 	g_segments.avail_segs[0] = (((void *)tmp) + sizeof(t_header) + size);

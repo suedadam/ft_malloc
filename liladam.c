@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   liladam.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.us.org>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 14:11:52 by asyed             #+#    #+#             */
-/*   Updated: 2018/04/09 20:00:32 by asyed            ###   ########.fr       */
+/*   Updated: 2018/04/10 01:39:02 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ int		main(void)
 	int		i;
 
 	i = 0;
-	while (i < 3001)
+	while (i < 30000)
 	{
 		printf("[%d]", i);
 		if (!(test[i] = malloc(sizeof(char) * 120)))

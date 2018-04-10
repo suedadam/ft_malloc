@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 15:42:46 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/19 16:13:46 by asyed            ###   ########.fr       */
+/*   Updated: 2018/04/09 19:37:31 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,35 +36,27 @@
 
 typedef struct __attribute__((packed))	s_header
 {
+	void		*page_start;
+	void		*next;
 	size_t		len;
 	uint8_t		used:1;
 	uint8_t		index:2;
 	uint8_t		chksum;
-	void		*page_start;
-	void		*next_page;
 }				t_header;
 
-void			free(void *ptr);
-void			*malloc(size_t size);
-void			*realloc(void *ptr, size_t size);
-void			*size_spacer(int page_index, size_t pagesize, size_t size);
-void			*large_alloc(size_t size);
-void			*find_space(void *curr_page, size_t pagesize, size_t req_len);
-int				get_memseg_size(uint8_t index);
-void			*init_page(size_t pagesize);
-int				next_page(t_header **l_page, void **curr_page, size_t pagesize);
-int				align_pagesize(size_t x, int large);
-int				valid_chksum(void *l_ptr);
-uint8_t			chksum(void *mem);
-void			show_alloc_mem(void);
-void			print_pageheader(int page_index, size_t *total);
-void			flip_page(t_header **l_page, void **curr_page, size_t pagesize);
-void			*alloc_large(int page_index, size_t pagesize, size_t req_len);
-void			update_prev(void *prev, void *next);
-void			cleanup_tty(void);
-int				non_allocated(void *ptr, int page_index);
+typedef struct	s_tree
+{
+	t_header	*avail_segs[LARGE];
+}				t_tree;
 
-extern void				*g_pages[3];
-extern pthread_mutex_t	g_mutex[3];
+int			valid_chksum(void *ptr);
+void		adam_free(void *ptr);
+void		*adam_malloc(size_t size);
+void		*adam_realloc(void *ptr, size_t size);
+size_t		align_pagesize(size_t x, int large);
+void		*new_page(size_t size);
 
+// extern void				*g_pages[3];
+extern pthread_mutex_t	g_mutex[LARGE + 1];
+extern t_tree			g_segments;
 #endif

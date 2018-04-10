@@ -1,35 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   chksum.c                                           :+:      :+:    :+:   */
+/*   adamtest.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/03/19 16:12:55 by asyed             #+#    #+#             */
-/*   Updated: 2018/03/19 16:13:03 by asyed            ###   ########.fr       */
+/*   Created: 2018/04/09 13:49:46 by asyed             #+#    #+#             */
+/*   Updated: 2018/04/09 16:24:47 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_malloc.h"
 
-int			valid_chksum(void *l_ptr)
+int	main(void)
 {
-	uint8_t		sum;
-	size_t		i;
-	void		*increment;
-	t_header	copy;
+	int		i;
+	void	*ret;
 
-	sum = 0;
 	i = 0;
-	if (!non_allocated(l_ptr, 0))
-		return (0);
-	ft_memcpy(&copy, l_ptr, sizeof(t_header));
-	copy.chksum = 0;
-	increment = &copy;
-	while (i++ < sizeof(t_header))
+	while (i < 3)
 	{
-		sum += *(unsigned char *)increment;
-		increment++;
+		if (!(ret = adam_malloc(2)))
+		{
+			printf("Failed :%d\n", i);
+			return (EXIT_FAILURE);
+		}
+		adam_free(ret);
+		printf("%d ok %p\n", i, ret);
+		i++;
 	}
-	return (sum == ((t_header *)l_ptr)->chksum);
+	// adam_malloc(1024);
 }

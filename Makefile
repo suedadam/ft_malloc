@@ -16,15 +16,10 @@ LIBFT = deps/ft_printf/libft/libft.a
 LIBPRINTF = deps/ft_printf/libftprintf.a
 SOURCE_DIR = src
 MALLOC_SRC = \
-	free \
 	malloc \
-	page_size \
+	free \
 	realloc \
-	utils \
-	show_alloc \
-	alloc_large \
-	large_free \
-	chksum
+	utils
 
 MALLOC_OBJ = $(patsubst %, obj/%.o, $(MALLOC_SRC))
 INC = -I deps/ft_printf

@@ -1,4 +1,4 @@
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -g -Wall -Werror -Wextra
 NAME = libft.a
 CFLAGS += -I libft.h
 LIBFT_SRC = ./ft_strrchr.c \

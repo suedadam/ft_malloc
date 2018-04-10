@@ -56,17 +56,20 @@ typedef struct	s_tree
 	t_header	*avail_segs[LARGE];
 }				t_tree;
 
-int			kill_cleaner(uint16_t id);
-uint8_t		chksum(void *mem);
-int			index_calc(size_t size);
-int			index2size(uint8_t index);
-int			valid_chksum(void *ptr);
-void		free(void *ptr);
-void		*malloc(size_t size);
-void		*realloc(void *ptr, size_t size);
-size_t		align_pagesize(size_t x, int large);
-size_t		guess_pagesize(uint8_t pageid);
-void		*new_page(size_t size);
+int	__attribute__((noreturn))			pthread_cancel(pthread_t thread);
+int	__attribute__((noreturn))			munmap(void *addr, size_t len);
+unsigned int __attribute__((noreturn))	sleep(unsigned int seconds);
+int										kill_cleaner(uint16_t id);
+uint8_t									chksum(void *mem);
+int										index_calc(size_t size);
+int										index2size(uint8_t index);
+int										valid_chksum(void *ptr);
+void									free(void *ptr);
+void									*malloc(size_t size);
+void									*realloc(void *ptr, size_t size);
+size_t									align_pagesize(size_t x, int large);
+size_t									guess_pagesize(uint8_t pageid);
+void									*new_page(size_t size);
 
 pthread_t				pageid[MAXPAGES];
 extern t_tree			g_segments;

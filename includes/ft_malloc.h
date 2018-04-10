@@ -56,7 +56,7 @@ typedef struct	s_tree
 	t_header	*avail_segs[LARGE];
 }				t_tree;
 
-int			kill_cleaner(t_header *mem);
+int			kill_cleaner(uint16_t id);
 uint8_t		chksum(void *mem);
 int			index_calc(size_t size);
 int			index2size(uint8_t index);

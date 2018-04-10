@@ -7,3 +7,4 @@ liladam*
 liltest*
 !liltest*.c
 .DS_Store
+.nfs*

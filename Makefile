@@ -10,7 +10,7 @@ endif
 
 MALLOC = libft_malloc_${HOSTTYPE}.so
 CC = gcc
-OBJFLAGS = -O3 -g -Wall -Werror -Wextra -c -fPIC
+OBJFLAGS = -Ofast -Wall -Werror -Wextra -c -fPIC
 LIBFLAGS = -g -shared -ldl
 LIBFT = deps/ft_printf/libft/libft.a
 LIBPRINTF = deps/ft_printf/libftprintf.a

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 typedef struct __attribute__((packed))	s_header
 {
@@ -82,17 +83,35 @@ int		main(void)
 {
 	char	*test[30001];
 	int		i;
+	int		j;
 	uint64_t	cycles;
 
+	srand(time(NULL));
 	i = 0;
+	j = 0;
 	cycles = rdtsc();
 	while (i < 30000)
 	{
+		if (i == 29999)
+		{
+			if (j == 30)
+			{
+				printf("%llu\n", rdtsc() - cycles);
+				exit(EXIT_SUCCESS);
+			}
+			j++;
+			i = 0;
+		}
 		// printf("[%d]", i);
-		if (!(test[i] = malloc(sizeof(char) * 1024)))
+		if (!(test[i] = malloc(sizeof(char) * (rand() & 0x55))))
 		{
 			printf("Fail bitch\n");
 			exit(-2);
+		}
+		if ((rand() & 0x63) == 6)
+		{
+			free(test[i]);
+			test[i] = NULL;
 		}
 		// printf("Returned %p\n", test[i]);
 		// test_copy(test[i], 119, i + 'A');
@@ -104,7 +123,7 @@ int		main(void)
 		// test[i] = NULL;
 		i++;
 	}
-	printf("%llu\n", rdtsc() - cycles);
-	while(1);
-	exit(42);
+	// while(1);
+	// sleep(1);
+	// exit(42);
 }

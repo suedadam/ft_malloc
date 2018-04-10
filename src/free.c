@@ -12,7 +12,7 @@
 
 #include "ft_malloc.h"
 
-void	remove_dangling(t_header **segs, void *match)
+void	__attribute__((always_inline))		remove_dangling(t_header **segs, void *match)
 {
 	t_header *ptr;
 	t_header *prev;
@@ -34,7 +34,7 @@ void	remove_dangling(t_header **segs, void *match)
 	}
 }
 
-static void	free_page(void *page_start)
+static void	__attribute__((always_inline))	free_page(void *page_start)
 {
 	int	i;
 
@@ -68,6 +68,38 @@ static void *page_check(void *page)
 	return (NULL);
 }
 
+/*
+** Rebalance to be in descending order
+** This will assist in creating less pages as it'll reduce
+** the amount of pages registered as not havine enough space.
+*/
+
+static void	rebalance(void)
+{
+	size_t		size;
+	size_t		tmp;
+	t_header	*prev;
+	t_header	*ptr;
+
+	ptr = g_segments.avail_segs[0];
+	size = guess_pagesize(ptr->index) - (((void *)ptr) - ptr->page_start);
+	while (ptr)
+	{
+		tmp = guess_pagesize(ptr->index) - (((void *)ptr) - ptr->page_start);
+		if (tmp > size)
+		{
+			((t_header *)prev)->next = ((t_header *)ptr)->next;
+			((t_header *)ptr)->next = g_segments.avail_segs[0];
+			g_segments.avail_segs[0] = ptr;
+			size = tmp;
+			ptr = ((t_header *)prev)->next;
+			continue ;
+		}
+		prev = ptr;
+		ptr = ptr->next;
+	}
+}
+
 static void *cleanup(void __attribute__((unused)) *arg)
 {
 	size_t	i;
@@ -76,7 +108,7 @@ static void *cleanup(void __attribute__((unused)) *arg)
 
 	while (1)
 	{
-		printf("Sleeping\n");
+		rebalance();
 		sleep(CLEAN_INTERVAL);
 		i = 0;
 		while (i < LARGE)
@@ -93,7 +125,6 @@ static void *cleanup(void __attribute__((unused)) *arg)
 			i++;
 		}
 	}
-	printf("Got in here.\n");
 	return (NULL);
 }
 
@@ -107,12 +138,8 @@ void	free(void *ptr)
 		return ;
 	if (i == 0)
 	{
-		printf("Creating thread.\n");
 		if (pthread_create(&thread, NULL, cleanup, NULL))
-		{
-			printf("Failed to create pthread %s\n", strerror(errno));
 			i = 0;
-		}
 		else
 			i++;
 	}

@@ -12,30 +12,35 @@
 
 #include "ft_malloc.h"
 
-inline __attribute__((always_inline)) int		kill_cleaner(t_header *mem)
+inline __attribute__((always_inline)) int		kill_cleaner(uint16_t id)
 {
-	if (pageid[mem->pageid])
+	if (pageid[id])
 	{
-		if (pageid[mem->pageid] == (void *)-1)
+		if (pageid[id] == (void *)-1)
 			return (EXIT_FAILURE);
-		pthread_cancel(pageid[mem->pageid]);
-		pageid[mem->pageid] = NULL;
+		pthread_cancel(pageid[id]);
+		pageid[id] = NULL;
 	}
 	return (EXIT_SUCCESS);
 }
+
+/*
+** Align to uint64_t to reduce itterations.
+*/
 
 inline __attribute__((always_inline)) uint8_t	chksum(void *mem)
 {
 	uint8_t		sum;
 	size_t		i;
 
-	sum = 0;
-	i = 0;
 	((t_header *)mem)->chksum = 0;
-	while (i++ < sizeof(t_header))
+	sum = *(uint32_t *)mem;
+	mem += sizeof(uint32_t);
+	i = sizeof(uint32_t);
+	while ((i += sizeof(uint64_t)) < sizeof(t_header))
 	{
-		sum += *(unsigned char *)mem;
-		mem++;
+		sum += *(uint64_t *)mem;
+		mem += sizeof(uint64_t);
 	}
 	return (sum);
 }
@@ -68,12 +73,13 @@ inline __attribute__((always_inline)) int		valid_chksum(void *ptr)
 	ft_memcpy(&copy, ptr, sizeof(t_header));
 	copy.chksum = 0;
 	inc = &copy;
-	i = 0;
-	sum = 0;
-	while (i++ < sizeof(t_header))
+	i = sizeof(uint32_t);
+	sum = *(uint32_t *)inc;
+	inc += sizeof(uint32_t);
+	while ((i += sizeof(uint64_t)) < sizeof(t_header))
 	{
-		sum += *(unsigned char *)inc;
-		inc++;
+		sum += *(uint64_t *)inc;
+		inc += sizeof(uint64_t);
 	}
 	return (sum == ((t_header *)ptr)->chksum);
 }

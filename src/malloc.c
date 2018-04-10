@@ -14,7 +14,7 @@
 
 t_tree			g_segments;
 
-size_t		guess_pagesize(uint8_t pageid)
+size_t __attribute__((always_inline))	guess_pagesize(uint8_t pageid)
 {
 	static int	tiny = 0;
 	static int	small = 0;
@@ -29,7 +29,7 @@ size_t		guess_pagesize(uint8_t pageid)
 	return (small);
 }
 
-void		*resize_segment(t_header **seg, size_t size)
+void  __attribute__((always_inline))	*resize_segment(t_header **seg, size_t size)
 {
 	t_header	*ret;
 	uint8_t		index;
@@ -39,14 +39,15 @@ void		*resize_segment(t_header **seg, size_t size)
 	index = index_calc(size);
 	if (((void *)ret + sizeof(t_header) + size) <
 		((void *)((t_header *)ret)->page_start) + guess_pagesize(index) &&
-		kill_cleaner(ret) == EXIT_SUCCESS)
+		kill_cleaner(ret->pageid) == EXIT_SUCCESS)
 	{
-		((t_header *)(((void *)ret) + sizeof(t_header) + size))->next = (*seg)->next;
-		*seg = ((void *)ret) + sizeof(t_header) + size;
+		__builtin_prefetch(ret, 1);
 		ret->len = size;
 		ret->used = 1;
 		ret->index = index;
 		ret->chksum = chksum(ret);
+		((t_header *)(((void *)ret) + sizeof(t_header) + size))->next = (*seg)->next;
+		*seg = ((void *)ret) + sizeof(t_header) + size;
 		(*seg)->page_start = ((t_header *)ret)->page_start;
 		(*seg)->pageid = ((t_header *)ret)->pageid;
 		return (((void *)ret) + sizeof(t_header));
@@ -54,7 +55,7 @@ void		*resize_segment(t_header **seg, size_t size)
 	return (new_page(size));
 }
 
-size_t		align_pagesize(size_t x, int large)
+size_t __attribute__((always_inline))	align_pagesize(size_t x, int large)
 {
 	static int	sys_size = 0;
 	size_t		page;
@@ -68,16 +69,19 @@ size_t		align_pagesize(size_t x, int large)
 	return (page + (page % sys_size));
 }
 
-void		*new_page(size_t size)
+void __attribute__((always_inline))		*new_page(size_t size)
 {
 	static uint16_t	pageid = 0;
 	t_header		*tmp;
 	uint8_t			index;
 
+	if (pageid == (MAXPAGES - 1))
+		return (NULL);
 	index = index_calc(size);
 	if ((tmp = mmap(NULL, guess_pagesize(index), PROT_ALL, FT_MAP_ANON, -1, 0))
 				== MAP_FAILED)
 		return (NULL);
+	__builtin_prefetch(tmp, 1);
 	tmp->page_start = tmp;
 	tmp->len = size;
 	tmp->used = 1;
@@ -91,7 +95,7 @@ void		*new_page(size_t size)
 	return (((void *)tmp) + sizeof(t_header));
 }
 
-void	*large_allocation(size_t size)
+void __attribute__((always_inline))		*large_allocation(size_t size)
 {
 	t_header	*tmp;
 	size_t		pagesize;
@@ -99,10 +103,7 @@ void	*large_allocation(size_t size)
 	pagesize = align_pagesize(size, 1);
 	if ((tmp = mmap(NULL, pagesize, PROT_ALL, FT_MAP_ANON, -1, 0))
 				== MAP_FAILED)
-	{
-		printf("Failed to mmap (%s)\n", strerror(errno));
 		return (NULL);
-	}
 	tmp->page_start = tmp;
 	tmp->len = pagesize;
 	tmp->used = 1;
@@ -126,7 +127,7 @@ void		*malloc(size_t size)
 			return (new_page(size));
 		}
 		ptr = g_segments.avail_segs[size];
-		if (kill_cleaner(ptr) == EXIT_FAILURE)
+		if (kill_cleaner(ptr->pageid) == EXIT_FAILURE)
 			return (new_page(size));
 		if (ptr)
 			g_segments.avail_segs[size] = ptr->next;

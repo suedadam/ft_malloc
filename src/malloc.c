@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/14 14:37:08 by asyed             #+#    #+#             */
-/*   Updated: 2018/04/09 19:41:31 by asyed            ###   ########.fr       */
+/*   Updated: 2018/04/09 22:35:09 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,18 @@ t_tree			g_segments;
 pthread_mutex_t	g_mutex[LARGE + 1] = {
 	PTHREAD_MUTEX_INITIALIZER
 };
+
+static inline __attribute__((always_inline)) int		kill_cleaner(t_header *mem)
+{
+	if (pageid[mem->pageid])
+	{
+		if (pageid[mem->pageid] == (void *)-1)
+			return (EXIT_FAILURE);
+		pthread_cancel(pageid[mem->pageid]);
+		pageid[mem->pageid] = NULL;
+	}
+	return (EXIT_SUCCESS);
+}
 
 static inline __attribute__((always_inline)) uint8_t	chksum(void *mem)
 {
@@ -62,7 +74,10 @@ void		*resize_segment(t_header **seg, size_t size)
 
 	if (!(ret = *seg))
 		return (NULL);
-	if (((void *)ret + sizeof(t_header) + size) < ((void *)((t_header *)ret)->page_start) + align_pagesize(index2size(index_calc(size)), 0))
+	if (((void *)ret + sizeof(t_header) + size) <
+		((void *)((t_header *)ret)->page_start) +
+		align_pagesize(index2size(index_calc(size)), 0) &&
+		kill_cleaner(ret) == EXIT_SUCCESS)
 	{
 		if (*seg)
 			((t_header *)(((void *)ret) + sizeof(t_header) + size))->next = (*seg)->next;
@@ -130,12 +145,12 @@ void	*large_allocation(size_t size)
 	return ((void *)tmp + sizeof(t_header));
 }
 
-void		*adam_malloc(size_t size)
+void		*malloc(size_t size)
 {
 	t_header	*ptr;
 
 	if (!size)
-		size = 1;
+		return (g_segments.avail_segs[size]);
 	if (size < LARGE)
 	{
 		if (!(g_segments.avail_segs[size]))
@@ -145,6 +160,8 @@ void		*adam_malloc(size_t size)
 			return (new_page(size));
 		}
 		ptr = g_segments.avail_segs[size];
+		if (kill_cleaner(ptr) == EXIT_FAILURE)
+			return (new_page(size));
 		if (ptr)
 			g_segments.avail_segs[size] = ptr->next;
 		else

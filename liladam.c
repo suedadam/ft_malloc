@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/17 14:11:52 by asyed             #+#    #+#             */
-/*   Updated: 2018/04/09 19:28:37 by asyed            ###   ########.fr       */
+/*   Updated: 2018/04/09 20:00:32 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int		main(void)
 	while (i < 3001)
 	{
 		printf("[%d]", i);
-		if (!(test[i] = adam_malloc(sizeof(char) * 120)))
+		if (!(test[i] = malloc(sizeof(char) * 120)))
 		{
 			printf("Fail bitch\n");
 			exit(-2);
@@ -81,11 +81,11 @@ int		main(void)
 		validate(test, i, 120, 128);
 		if (pow2(i))
 		{
-			adam_free(test[i]);
+			free(test[i]);
 			test[i] = NULL;
 		}
 		else
-			test[i] = adam_realloc(test[i], 128);
+			test[i] = realloc(test[i], 128);
 		printf("New = %p\n", test[i]);
 		// printf("Test [%d] = %p\n", i, test[i]);
 		i++;

@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/09 13:49:46 by asyed             #+#    #+#             */
-/*   Updated: 2018/04/09 16:24:47 by asyed            ###   ########.fr       */
+/*   Updated: 2018/04/09 22:33:37 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,19 @@ int	main(void)
 	i = 0;
 	while (i < 3)
 	{
-		if (!(ret = adam_malloc(2)))
+		if (!(ret = malloc(28)))
 		{
 			printf("Failed :%d\n", i);
 			return (EXIT_FAILURE);
 		}
-		adam_free(ret);
+		free(ret);
 		printf("%d ok %p\n", i, ret);
 		i++;
 	}
+	sleep(10);
+	ret = malloc(28);
+	printf("3 ok %p\n", ret);
+	free(ret);
+	while(1);
 	// adam_malloc(1024);
 }
